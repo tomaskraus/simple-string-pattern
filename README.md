@@ -1,7 +1,7 @@
 # Simple String Pattern
 
 A **Simple String Pattern** (a.k.a. **SSP**) is a very simple pattern used to match a string.  
-A **simple-string-pattern** is also a name of the library for dealing with _Simple String Patterns_, [here](#simple-string-pattern-library) in this document.
+A **simple-string-pattern** is also a name of the library to dealing with _Simple String Patterns_, [here](#simple-string-pattern-library) in this document.
 
 Unlike [Regular Expressions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions), _Simple String Pattern_ intentionally lacks a lot of features, to be very easy to read and understand.
 
@@ -28,17 +28,43 @@ In the code example above, there are SSPs within those `//=>` comments.
 
 ## Pattern Definition
 
-_Simple String Pattern_ (a.k.a. SSP) is **case-sensitive, line-break-escaped** string, with these additional features with a special meaning:
+_Simple String Pattern_ (a.k.a. SSP) is **case-sensitive, trimmed, line-break-escaped** string, with these additional features with a special meaning:
 
 1. Can be surrounded by double quotes `"`, to make its leading and trailing spaces significant.
 2. On top on that, it can be surrounded by a _*Partial Mark*_ `...` on either side, to match the beginning, the end or something in the middle of the input.
 
-**SSP Examples**: `Hello \n"World"`, `"Hello \n\"World\""`, <code>"Hello&nbsp;" ...</code>, `... World"`, `... Wo ...`
+#### SSP Examples:
+
+`Hello \n"World"`, `"Hello \n\"World\""`, <code>"Hello&nbsp;" ...</code>, `... World"`, `... Wo ...`
 
 All of these SSP examples match this multi-line string input:
 
     Hello
     "World"
+
+##### Some special SSPs:
+
+- empty pattern (matches the empty or only-whitespaced input)
+- `""` empty exact pattern (matches only the empty input)
+- `...` empty start pattern (matches everything)
+- `""...` empty start exact pattern (matches everything)
+- `......` empty middle pattern (matches everything)
+- `... ...` empty middle pattern (matches everything)
+- `... "" ...` empty middle exact pattern (matches everything)
+- `...""...` empty middle exact pattern (matches everything)
+
+#### Non SSP Examples:
+
+The string <code>&nbsp;hello</code> is not a valid SSP, as it starts with a whitespace, so it is not trimmed.
+
+The string <code>&nbsp;</code> is not a valid SSP, as it starts with a whitespace, so it is not trimmed. Use the full exact pattern to match an input containing spaces at the beginning/end.
+
+The string:
+
+    Hello
+    "World"
+
+is not a valid SSP, as it contains an unescaped newline character.
 
 ## Pattern Nomenclature
 
@@ -64,11 +90,6 @@ Sure we can combine _Exact_/_Loose_ patterns with _Partial Marks_:
 Should you match special characters in the pattern string, use escape sequences in the pattern:
 
 `height:\t400`
-
-Double quotes can be escaped:
-
-`\" Hello, \"World\"\"` is equal to `" Hello, "World""`  
-Both patterns match the same input <code>&nbsp;Hello, "World"</code>
 
 Escape the backslash character (\\) if you want to use it in the pattern as is:
 
@@ -96,49 +117,47 @@ Within the _partial pattern_, a space between three dots and pattern body is ins
 That is, if you want to match leading and/or trailing spaces inside the string, use _Partial Exact Pattern_:  
 `... " abc" ...` matches `1 abc2`, `1 abc 2`, but not `1abc2`
 
-## Pattern structure in BNF notation
+## Pattern structure in EBNF notation
 
-There is a _Simple String Pattern_ syntax written in [Backus-Naur form](https://en.wikipedia.org/wiki/Backus%E2%80%93Naur_form):
+There is a _Simple String Pattern_ syntax written in [Extended Backus-Naur form](https://en.wikipedia.org/wiki/Extended_Backus%E2%80%93Naur_form):
 
 for white-spaces, see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Lexical_grammar#white_space
 
-    <simple-string-pattern> ::= <full-pattern> | <partial-pattern>
+```ebnf
+    simple string pattern = full pattern | partial pattern ;
 
-             <full-pattern> ::= <pattern>
+             full pattern = pattern ;
 
-          <partial-pattern> ::= <start-pattern> | <end-pattern> | <middle-pattern>
+          partial pattern = start pattern | end pattern | middle pattern ;
 
-            <start-pattern> ::= <pattern> <suffix>
+            start pattern = pattern, { white space }, partial mark ;
 
-              <end-pattern> ::= <prefix> <pattern>
+              end pattern = partial mark, { white space }, pattern ;
 
-           <middle-pattern> ::= <prefix> <pattern> <suffix>
+           middle pattern = partial mark, { white space },
+                            pattern,
+                            { white space }, partial mark ;
 
-                   <prefix> ::= <partial-mark> <white-spaces> | <partial-mark>
+             partial mark = ".", ".", "." ;
 
-                   <suffix> ::= <white-spaces> <partial-mark> | <partial-mark>
+              white space = " " | "\n" | "\t" | "\r" | "\f" | "\b" ;
 
-             <partial-mark> ::= "..."
+                  pattern = exact pattern | loose pattern ;
 
-             <white-spaces> ::= <white-space> | <white-space> <white-spaces>
+            exact pattern = '"', [ pattern body ], '"' ;
 
-              <white-space> ::= " " | <TAB> | <VT> | <FF> | <NBSP> | <ZWNBSP> | <USP>
+            loose pattern = pattern body ;
 
-                  <pattern> ::= <exact-pattern> | <loose-pattern>
+             pattern body = ( char - white space ), { char } ;
 
-            <exact-pattern> ::= """ <pattern-body> """
+                     char = regular char | escaped char ;
 
-            <loose-pattern> ::= <pattern-body>
+             regular char = ? regular unicode characters, except control characters (line break, CR and so on). Without further explanation ? ;
 
-             <pattern-body> ::= "" | <char> | <char> <pattern-body>
+             escaped char = "\\", special char ;
 
-                     <char> ::= <regular-char> | <escaped-char>
-
-             <regular-char> ::= regular unicode characters, except control characters (line break, CR and so on). Without further explanation
-
-             <escaped-char> ::= "\" <special-char>
-
-             <special-char> ::= """ | "'" | "`" | "\" | "b" | "f" | "n" | "r" | "t"
+             special char = '"' | "'" | "`" | "\" | "b" | "f" | "n" | "r" | "t" ;
+```
 
 # simple-string-pattern library
 
@@ -215,7 +234,7 @@ console.log(SSP.value());
 
 ### On SSP objects equality
 
-Two SSP object are considered equal if their pattern string representations are equal:
+Two SSP objects are considered equal if their pattern string representations (available via their _value()_ method) are equal:
 
 ```js
 const s1 = `Hello
@@ -239,14 +258,24 @@ Furthermore:
 const s3 = 'Hello\\n world!';
 const patt3 = new SSP(s3);
 
-console.log(s2 === s3);
+console.log(s2 === s3); // these strings used to create SSP are not equal...
 //=> false
-console.log(patt3.value() === patt1.value());
+console.log(patt3.value() === patt1.value()); // ...but resulting SSPs could.
 //=> true
 console.log(patt3.value() === patt2.value());
 //=> true
 console.log(patt3.value());
 //=> Hello\n world!
+```
+
+The following holds true:
+
+```js
+const patt1 = new SSP('hello');
+const patt2 = new SSP(patt1.value());
+
+console.log(patt1.value() === patt2.value());
+//=> true
 ```
 
 ### test() method
@@ -263,4 +292,3 @@ console.log(patt.test('lazy'));
 console.log(patt.test('See?\nWhat a l-a-z-y fox!'));
 //=> false
 ```
-
