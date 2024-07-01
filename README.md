@@ -16,15 +16,15 @@ console.log(1 + 1 === 2);
 //=> true
 
 // Here, we only write the beginning of what we expect to be the output
-console.log('abcd'.split(''));
+console.log("abcd".split(""));
 //=> [ 'a', 'b' ...
 
 // What the end of the output should look like
-console.log('Thats All! ');
+console.log("Thats All! ");
 //=> ... "All! "
 
 // What the (possibly multi-line) output should contain
-console.log('Line: 155 \nError: Division by zero!');
+console.log("Line: 155 \nError: Division by zero!");
 //=> ... zero ...
 ```
 
@@ -149,13 +149,13 @@ $ npm i simple-string-pattern
 Typescript / ES module:
 
 ```ts
-import * as SSP from 'simple-string-pattern';
+import * as SSP from "simple-string-pattern";
 ```
 
 Javascript / CommonJS:
 
 ```js
-const SSP = require('simple-string-pattern');
+const SSP = require("simple-string-pattern");
 ```
 
 ### Create a Pattern
@@ -208,7 +208,7 @@ const s1 = `Hello
  world!`;
 const patt1 = SSP.parse(s1);
 
-const s2 = 'Hello\n world!';
+const s2 = "Hello\n world!";
 const patt2 = SSP.parse(s2);
 
 console.log(s1 === s2);
@@ -222,7 +222,7 @@ console.log(patt1.value());
 Furthermore:
 
 ```js
-const s3 = 'Hello\\n world!';
+const s3 = "Hello\\n world!";
 const patt3 = new SSP(s3);
 
 console.log(s2 === s3); // these strings used to create SSP are not equal...
@@ -238,7 +238,7 @@ console.log(patt3.value());
 The following holds true:
 
 ```js
-const patt1 = new SSP('hello');
+const patt1 = new SSP("hello");
 const patt2 = new SSP(patt1.value());
 
 console.log(patt1.value() === patt2.value());
@@ -250,12 +250,12 @@ console.log(patt1.value() === patt2.value());
 Returns _true_ if pattern does match the string parameter, _false_ otherwise:
 
 ```js
-const patt = new SSP('... lazy ...');
+const patt = new SSP("... lazy ...");
 
-console.log(patt.test('See?\nWhat a lazy fox!'));
+console.log(patt.test("See?\nWhat a lazy fox!"));
 //=> true
-console.log(patt.test('lazy'));
+console.log(patt.test("lazy"));
 //=> true
-console.log(patt.test('See?\nWhat a l-a-z-y fox!'));
+console.log(patt.test("See?\nWhat a l-a-z-y fox!"));
 //=> false
 ```
