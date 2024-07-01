@@ -55,7 +55,7 @@ From the very beginning, **SSP** format aims to be well defined, hence it has it
 - `... abc ...`: Does match any string that contains at least one '`abc`'.
 - `... " a"b"c" ...`: Does match any string that contains at least one '` a"b"c`'.
 - `... \n ...`: Does match any string that contains at least one newline character (i.e. expect the output to be multi-line one).
-- `... \\ ...`: Does match any string that contains at least one backslash character (`\`). In SSP, some special characters use escape sequence, so does the backslash character itself. 
+- `... \\ ...`: Does match any string that contains at least one backslash character (`\`). In SSP, some special characters use escape sequence, so does the backslash character itself.
 
 ## The Great Escape
 
@@ -72,6 +72,7 @@ SSP consist of _Pattern Body_ (i.e. exact string to match), which can be surroun
 Spaces between pattern body and partial mark are insignificant.
 
 A simplified SSP structure (in an [ABNF](https://en.wikipedia.org/wiki/Augmented_Backus%E2%80%93Naur_form)):
+
 ```abnf
 ssp = [partial-mark] pattern-body [partial-mark]
 ```
@@ -85,17 +86,17 @@ Some special characters (such as the newline) can be written in an SSP using **e
 
 ## SSP Types:
 
-Depending on where in the pattern the partial mark is, the pattern is one of four types: *Full*, *Start*, *End* and *Middle*.
+Depending on where in the pattern the partial mark is, the pattern is one of four types: _Full_, _Start_, _End_ and _Middle_.  
+Only the _Full_ pattern matches the input as a whole.
 
 1. `Hello\n "World"`: The _Full Pattern_ example. There is only a _Pattern Body_ (`Hello\n "World"`) in the _Full Pattern_, without any _Partial Marks_.  
-This _Full Pattern_ does match the string '`Hello\n "World"`'.
+   This _Full Pattern_ does match the whole string '`Hello\n "World"`'.
 2. <code>"Hello&nbsp;" ...</code>: The _Start Pattern_. Consists of a _Pattern Body_ (<code>Hello&nbsp;</code>) and a _Partial Mark_ (`...`) at the end. Here, the _Pattern Body_ is leading-and-trailing-space significant.  
-This _Start Pattern_ match any string that begins with '`Hello `'.
+   This _Start Pattern_ match any string that begins with '`Hello `'.
 3. `... World"`: The _End Pattern_. With the leading _Partial Mark_, followed by a _Pattern Body_ (`World"`). Being not surrounded by double quotes, the _Pattern Body_ does not contain significant leading or trailing spaces.  
-This _End Pattern_ does match any string that ends with '`World"`'.
+   This _End Pattern_ does match any string that ends with '`World"`'.
 4. `... Wo ...`: The _Middle Pattern_, with a _Pattern Body_ (`Wo`), surrounded by _Pattern Marks_.  
-This _Middle Pattern_ does match any string that contains the string '`Wo`'.
-
+   This _Middle Pattern_ does match any string that contains the string '`Wo`'.
 
 All of these SSP examples match this multi-line string input:
 
@@ -151,7 +152,7 @@ To create valid SSPs for those strings, enclose them in double quotes:
 
 ## SSP Grammar
 
-There is a [Simple String Pattern Grammar](./src/ssp.ne) file that can be processed by [Nearley Parser](https://nearley.js.org/). That grammar file  serves as a single source of truth.
+There is a [Simple String Pattern Grammar](./src/ssp.ne) file that can be processed by [Nearley Parser](https://nearley.js.org/). That grammar file serves as a single source of truth.
 
 # simple-string-pattern library
 
