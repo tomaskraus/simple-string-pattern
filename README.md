@@ -1,6 +1,6 @@
 # Simple String Pattern
 
-A **Simple String Pattern** (a.k.a. **SSP**) is a very simple pattern used to match a string.  
+A **Simple String Pattern** (a.k.a. **SSP**) is a very simple yet well defined pattern used to match a string.  
 A **simple-string-pattern** is also a name of the library to dealing with _Simple String Patterns_, [here](#simple-string-pattern-library) in this document.
 
 Unlike [Regular Expressions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions), _Simple String Pattern_ intentionally has only a few features, to be very easy to read and understand.
@@ -19,27 +19,39 @@ console.log(1 + 1 === 2);
 console.log("abcd".split(""));
 //=> [ 'a', 'b' ...
 
-// What the end of the output should look like
+// What the end of the output should look like (including the space at the end.)
 console.log("Thats All! ");
 //=> ... "All! "
 
 // What the (possibly multi-line) output should contain
 console.log("Line: 155 \nError: Division by zero!");
 //=> ... zero ...
+
+// In the expected output,
+// we can describe common special characters using escape sequences
+console.log("a" + String.fromCharCode(9) + "1");
+//=> a\t1
+
+// And yes we can go beyond the ASCII:
+console.log("絵文字: 😀");
+//=> 絵文字: 😀
 ```
 
 In the code example above, there are SSPs within those `//=>` comments.
 
 As you see, the SSP really is a string that may contain spaces and some escaped characters, optionally double-quoted, possibly surrounded by three dots ("...") on either side.
 
+> Some effort has been made to make the **SSP** to be well defined, hence it has its own [SSP Grammar](#ssp-grammar).
+
 ## Basic SSP Examples
 
 - `abc`: Does match the string 'abc' only.
-- `" abc"`: Does match the string ' abc' only. Double quotes ensure that leading and trailing spaces are significant.
+- `" abc"`: Does match the string ' abc' only. Double quotes ensure that leading and trailing spaces are significant. Those outer double quotes are not part of the search.
+- `"" abc""`: Does match the string '" abc"' only.
 - `abc ...`: Does match any string that starts with 'abc'.
 - `... abc`: Does match any string that ends with 'abc'.
 - `... abc ...`: Does match any string that contains at least one 'abc'.
-- `... " abc" ...`: Does match any string that contains at least one ' abc'.
+- `... " a"b"c" ...`: Does match any string that contains at least one ' a"b"c'.
 - `... \n ...`: Does match any string that contains at least one newline character (i.e. expect the output to be multi-line one).
 - `... \\ ...`: Does match any string that contains at least one backslash character.
 
@@ -57,19 +69,29 @@ _Simple String Pattern_ (a.k.a. SSP) is a **trimmed** string with some **escape 
 SSP consist of _Pattern Body_ (i.e. exact string to match), which can be surrounded by a _*Partial Mark*_ (`...`) on either side, to match the beginning, the end or the inside of the possible _input_.  
 Spaces between pattern body and partial mark are insignificant.
 
+A simplified SSP structure (in an [ABNF](https://en.wikipedia.org/wiki/Augmented_Backus%E2%80%93Naur_form)):
+```abnf
+ssp = [partial-mark] pattern-body [partial-mark]
+```
+
 The pattern body itself can start and end with double quote (`"`), to make its leading and trailing spaces significant.
 
 Some special characters (such as the newline) can be written in an SSP using **escape-sequence**, with a backslash (`\`) as an escape symbol.  
  Escape the backslash itself to use the backslash in an SSP.
 
-> For an exact SSP definition, see the [Pattern Grammar](#pattern-grammar) chapter.
+> For a complete SSP definition, see the [SSP Grammar](#ssp-grammar) chapter.
 
-#### SSP Examples:
+## SSP Examples:
 
-1. `Hello\n "World"`: The _Full pattern_ example. There is only a pattern body (`Hello\n "World"`) in the _Full Pattern_, without any partial marks.
-2. <code>"Hello&nbsp;" ...</code>: The _Start pattern_. Consists of a pattern body (<code>Hello&nbsp;</code>) and a partial mark (`...`) at the end. Here, the pattern body is leading-and-trailing-space significant.
-3. `... World"`: The _End pattern_. With the leading partial mark, followed by a pattern body (`World"`). Being not surrounded by double quotes, the pattern body does not contain significant leading or trailing spaces.
-4. `... Wo ...`: The _Middle pattern_, with a pattern body (`Wo`), surrounded by pattern marks.
+1. `Hello\n "World"`: The _Full Pattern_ example. There is only a _Pattern Body_ (`Hello\n "World"`) in the _Full Pattern_, without any _Partial Marks_.  
+This _Full Pattern_ does match the string 'Hello\n "World"'.
+2. <code>"Hello&nbsp;" ...</code>: The _Start Pattern_. Consists of a _Pattern Body_ (<code>Hello&nbsp;</code>) and a _Partial Mark_ (`...`) at the end. Here, the _Pattern Body_ is leading-and-trailing-space significant.  
+This _Start Pattern_ match any string that begins with 'Hello '.
+3. `... World"`: The _End Pattern_. With the leading _Partial Mark_, followed by a _Pattern Body_ (`World"`). Being not surrounded by double quotes, the _Pattern Body_ does not contain significant leading or trailing spaces.  
+This _End Pattern_ does match any string that ends with 'World"'.
+4. `... Wo ...`: The _Middle Pattern_, with a _Pattern Body_ (`Wo`), surrounded by _Pattern Marks_.  
+This _Middle Pattern_ does match any string that contains the string 'Wo'.
+
 
 All of these SSP examples match this multi-line string input:
 
@@ -78,7 +100,7 @@ Hello
  "World"
 ```
 
-##### On Double Quotes:
+#### On Double Quotes:
 
 Because of special meaning of double quotes surrouding the pattern body:
 
@@ -93,14 +115,15 @@ or escape those double quotes at the beginning and end:
 
 - `\"abc\"`: Also does match the string '"abc"' only.
 
-##### Some special SSPs:
+#### Some special SSPs:
 
 - `""` full empty pattern (does match the empty input only)
 - `""...` start empty pattern (does match everything)
 - `...""` end empty pattern (does match everything)
 - `...""...` middle empty pattern (does match everything)
+- `..."..."...` middle pattern that does match any string containing three consecutive dots
 
-#### Non SSP Examples:
+#### Invalid SSP Examples:
 
 The empty string is not a valid SSP. Use `""` as an SSP that does (and only) match the empty input.
 
@@ -122,9 +145,9 @@ To create valid SSPs for those strings, enclose them in double quotes:
 2. `... " . " ...`: Does match an input that contains at least one dot surrounded by a space character.
 3. `"..."`: Does match three dots.
 
-## Pattern Grammar
+## SSP Grammar
 
-There is a [Simple String Pattern syntax](./src/ssp.ne) document written for [Nearley Parser](https://nearley.js.org/). This document serves as single source of truth.
+There is a [Simple String Pattern Grammar](./src/ssp.ne) file that can be processed by [Nearley Parser](https://nearley.js.org/). That grammar file  serves as a single source of truth.
 
 # simple-string-pattern library
 
@@ -190,13 +213,13 @@ From the above example, the _patt_ object holds this pattern: `Hello\n world!`
 To get a string representation of the pattern, use the _value()_ method of the SSP object:
 
 ```js
-const s = `Hello
+const s = `...Hello
  world!`;
 
 const patt = SSP.parse(s);
 
 console.log(SSP.value());
-//=> Hello\n world!
+//=> "... Hello\n world!"
 ```
 
 ### On SSP objects equality
@@ -227,7 +250,7 @@ const patt3 = new SSP(s3);
 
 console.log(s2 === s3); // these strings used to create SSP are not equal...
 //=> false
-console.log(patt3.value() === patt1.value()); // ...but resulting SSPs could.
+console.log(patt3.value() === patt1.value()); // ...although, resulting SSPs could.
 //=> true
 console.log(patt3.value() === patt2.value());
 //=> true
@@ -240,7 +263,6 @@ The following holds true:
 ```js
 const patt1 = new SSP("hello");
 const patt2 = new SSP(patt1.value());
-
 console.log(patt1.value() === patt2.value());
 //=> true
 ```
