@@ -3,57 +3,106 @@
 A **Simple String Pattern** (a.k.a. **SSP**) is a very simple pattern used to match a string.  
 A **simple-string-pattern** is also a name of the library to dealing with _Simple String Patterns_, [here](#simple-string-pattern-library) in this document.
 
-Unlike [Regular Expressions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions), _Simple String Pattern_ intentionally lacks a lot of features, to be very easy to read and understand.
+Unlike [Regular Expressions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions), _Simple String Pattern_ intentionally has only a few features, to be very easy to read and understand.
 
-The motivation to create such a thing as the SSP was the need for writing a [Doctest](https://docs.python.org/3/library/doctest.html)-like testing tool, where user can write string output assertions right into code comments:
+The motivation to create such a thing as the SSP was the need for writing a [Doctest](https://docs.python.org/3/library/doctest.html)-like testing tool, where user can write string output assertions right into code comments, in a convenient way:
 
 ```js
+// We expect the output to be 2
 console.log(1 + 1);
 //=> 2
 
 console.log(1 + 1 === 2);
 //=> true
 
+// Here, we only write the beginning of what we expect to be the output
 console.log('abcd'.split(''));
 //=> [ 'a', 'b' ...
 
-console.log('Thats all!');
-//=> ... all!
+// What the end of the output should look like
+console.log('Thats All! ');
+//=> ... "All! "
 
+// What the (possibly multi-line) output should contain
 console.log('Line: 155 \nError: Division by zero!');
 //=> ... zero ...
 ```
 
 In the code example above, there are SSPs within those `//=>` comments.
 
+As you see, the SSP really is a string that may contain spaces and some escaped characters, optionally double-quoted, possibly surrounded by three dots ("...") on either side.
+
+## Basic SSP Examples
+
+- `abc`: Does match the string 'abc' only.
+- `" abc"`: Does match the string ' abc' only. Double quotes ensures that leading and trailing spaces are significant.
+- `abc ...`: Does match any string that starts with 'abc'.
+- `... abc`: Does match any string that ends with 'abc'.
+- `... abc ...`: Does match any string that contains at least one 'abc'.
+- `... " abc" ...`: Does match any string that contains at least one ' abc'.
+- `... \n ...`: Does match any string that contains at least one newline character (i.e. expect the output to be multi-line one).
+- `... \\ ...`: Does match any string that contains at least one backslash character.
+
+## The Great Escape
+
+In this document, SSP examples are written in the way they appear in the console or a file.  
+Should you use SSPs as a string literal in javascript, just **double** those backslashes in that literal.
+
+Example: `Hello \n \\backslashes\\!` SSP written in a file becomes a <code>'Hello&nbsp;\\\\n&nbsp;\\\\\\\\backslashes\\\\\\\\!'</code> SSP string literal.
+
 ## Pattern Definition
 
-_Simple String Pattern_ (a.k.a. SSP) is **case-sensitive, trimmed, line-break-escaped** string, with these additional features with a special meaning:
+_Simple String Pattern_ (a.k.a. SSP) is a **trimmed** string with some **escape sequences**, intended to match **multi-line** _input_ in a **case-sensitive** manner.
 
-1. Can be surrounded by double quotes `"`, to make its leading and trailing spaces significant.
-2. On top on that, it can be surrounded by a _*Partial Mark*_ `...` on either side, to match the beginning, the end or something in the middle of the input.
+SSP consist of _Pattern Body_ (i.e. exact string to match), which can be surrounded by a _*Partial Mark*_ (`...`) on either side, to match the beginning, the end or the inside of the possible _input_.  
+Spaces between pattern body and partial mark are insignificant.
+
+The pattern body itself can start and end with double quote (`"`), to make its leading and trailing spaces significant.
+
+Some special characters (such as the newline) can be written in an SSP using **escape-sequence**, with a backslash (`\`) as an escape symbol.  
+ Escape the backslash itself to use the backslash in an SSP.
+
+> For an exact SSP definition, see the [Pattern Grammar](#pattern-grammar) chapter.
 
 #### SSP Examples:
 
-`Hello \n"World"`, `"Hello \n\"World\""`, <code>"Hello&nbsp;" ...</code>, `... World"`, `... Wo ...`
+1. `Hello\n "World"`: The _Full pattern_ example. There is only a pattern body (`Hello\n "World"`) in the _Full Pattern_, without any partial marks.
+2. <code>"Hello&nbsp;" ...</code>: The _Start pattern_. Consists of a pattern body (<code>Hello&nbsp;</code>) and a partial mark (`...`) at the end. Here, the pattern body is leading-and-trailing-space significant.
+3. `... World"`: The _End pattern_. With the leading partial mark, followed by a pattern body (`World"`). Being not surrounded by double quotes, the pattern body does not contain significant leading or trailing spaces.
+4. `... Wo ...`: The _Middle pattern_, with a pattern body (`Wo`), surrounded by pattern marks.
 
 All of these SSP examples match this multi-line string input:
 
-    Hello
-    "World"
+```
+Hello
+ "World"
+```
+
+##### On Double Quotes:
+
+Because of special meaning of double quotes surrouding the pattern body:
+
+- `"abc"`: Does match the string 'abc' only.
+- `"... abc ..."`: Does match the string '... abc ...'.
+
+Should we need to match a string surrounded by double quotes, double them in the SSP:
+
+- `""abc""`: Does match the string '"abc"' only.
+
+or escape those double quotes at the beginning and end:
+
+- `\"abc\"`: Also does match the string '"abc"' only. (there)
 
 ##### Some special SSPs:
 
-- empty pattern (matches the empty or only-whitespaced input)
-- `""` empty exact pattern (matches only the empty input)
-- `...` empty start pattern (matches everything)
-- `""...` empty start exact pattern (matches everything)
-- `......` empty middle pattern (matches everything)
-- `... ...` empty middle pattern (matches everything)
-- `... "" ...` empty middle exact pattern (matches everything)
-- `...""...` empty middle exact pattern (matches everything)
+- `""` full empty pattern (does match the empty input only)
+- `""...` start empty pattern (does match everything)
+- `...""` end empty pattern (does match everything)
+- `...""...` middle empty pattern (does match everything)
 
 #### Non SSP Examples:
+
+The empty string is not a valid SSP. Use `""` as an SSP that does (and only) match the empty input.
 
 The string <code>&nbsp;hello</code> is not a valid SSP, as it starts with a whitespace, so it is not trimmed.
 
@@ -66,98 +115,16 @@ The string:
 
 is not a valid SSP, as it contains an unescaped newline character.
 
-## Pattern Nomenclature
+The string `.` is not a valid SSP, nor any string consisting of space and dot characters only.  
+To create valid SSPs for those strings, enclose them in double quotes:
 
-Simple String Patterns can be either _loose_ (ignoring leading and trailing whitespaces in the input) or _exact_, using double quotes ("):
+1. `"."`: Does match an input of one dot.
+2. `... " . " ...`: Does match an input that contains at least one dot surrounded by a space character.
+3. `"..."`: Does match three dots.
 
-1. `abc`: the _Full Loose Pattern_. Matches `abc`, <code>&nbsp;abc</code>, `abc `, <code>&nbsp;abc&nbsp;</code>... Does not match `ABC`, `acc`, `abcd` nor `ab` ...
+## Pattern Grammar
 
-2. `" abc "`: the _Full Exact Pattern_. Matches <code>&nbsp;abc&nbsp;</code>, but not <code>&nbsp;abc</code>, <code>abc&nbsp;</code> nor <code>abc</code>
-
-Furthermore, patterns can be either _full_ (as were shown above) or _partial_ - matching the _start_, the _end_ or the _middle_ of the string, using three dots (...) as the _Partial Mark_:
-
-1. `abc ...`: The _Start Pattern_. Matches `abc`, `abcd`, <code>abc&nbsp;</code>, but not `abd`, `ab`
-2. `... def`: The _End Pattern_. Matches `def`, `abcdef`, <code>&nbsp;def</code>, but not `defg`, `ef`
-3. `... abc ...`: The _Middle Pattern_. Matches `abc`, `xabc`, `abcx`, `12abc34`, <code>&nbsp;abc&nbsp;</code>, but not `xabx`, `ab`
-
-Sure we can combine _Exact_/_Loose_ patterns with _Partial Marks_:
-
-1. `... " !"`: the _End Exact Pattern_ (kind of _Partial Exact Pattern_). Matches <code>Hello&nbsp;!</code>, but not `Hello!` nor <code>&nbsp;Hello&nbsp;!&nbsp;</code>.
-2. `... ost ...`: the _Middle Loose Pattern_ (kind of Partial Loose Pattern). Matches `ost`, <code>&nbsp;ost&nbsp;</code> , `Most`, <code>Mostly&nbsp;true</code>, but not `os` nor <code>m&nbsp;os&nbsp;t</code>.
-
-### Escapes
-
-Should you match special characters in the pattern string, use escape sequences in the pattern:
-
-`height:\t400`
-
-Escape the backslash character (\\) if you want to use it in the pattern as is:
-
-`c:\\windows\\system` matches the input `c:\windows\system`
-
-### Multi-Line
-
-Having this multi-line input:
-
-     Brown fox
-    jumps over a lazy dog.
-
-there are some examples of patterns that match that input:
-
-1. `... lazy ...`
-2. `... " dog."`
-3. `Brown ...`
-4. `... fox\njumps ...`
-5. `Brown fox\njumps over a lazy dog.`
-6. `" Brown fox\njumps over a lazy dog."`
-
-### Others
-
-Within the _partial pattern_, a space between three dots and pattern body is insignificant, so <code>...&nbsp;abc&nbsp;...</code> pattern equals the `...abc...` one.  
-That is, if you want to match leading and/or trailing spaces inside the string, use _Partial Exact Pattern_:  
-`... " abc" ...` matches `1 abc2`, `1 abc 2`, but not `1abc2`
-
-## Pattern structure in EBNF notation
-
-There is a _Simple String Pattern_ syntax written in [Extended Backus-Naur form](https://en.wikipedia.org/wiki/Extended_Backus%E2%80%93Naur_form):
-
-for white-spaces, see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Lexical_grammar#white_space
-
-```ebnf
-    simple string pattern = full pattern | partial pattern ;
-
-             full pattern = pattern ;
-
-          partial pattern = start pattern | end pattern | middle pattern ;
-
-            start pattern = pattern, { white space }, partial mark ;
-
-              end pattern = partial mark, { white space }, pattern ;
-
-           middle pattern = partial mark, { white space },
-                            pattern,
-                            { white space }, partial mark ;
-
-             partial mark = ".", ".", "." ;
-
-              white space = " " | "\n" | "\t" | "\r" | "\f" | "\b" ;
-
-                  pattern = exact pattern | loose pattern ;
-
-            exact pattern = '"', [ pattern body ], '"' ;
-
-            loose pattern = pattern body ;
-
-             pattern body = ( char - white space ), { char } ;
-
-                     char = regular char | escaped char ;
-
-             regular char = ? regular unicode characters, except control characters (line break, CR and so on). Without further explanation ? ;
-
-             escaped char = "\\", special char ;
-
-             special char = '"' | "'" | "`" | "\" | "b" | "f" | "n" | "r" | "t" ;
-```
+There is a [Simple String Pattern syntax](./src/ssp.ne) document written for [Nearley Parser](https://nearley.js.org/). This document serves as single source of truth.
 
 # simple-string-pattern library
 
