@@ -35,7 +35,7 @@ As you see, the SSP really is a string that may contain spaces and some escaped 
 ## Basic SSP Examples
 
 - `abc`: Does match the string 'abc' only.
-- `" abc"`: Does match the string ' abc' only. Double quotes ensures that leading and trailing spaces are significant.
+- `" abc"`: Does match the string ' abc' only. Double quotes ensure that leading and trailing spaces are significant.
 - `abc ...`: Does match any string that starts with 'abc'.
 - `... abc`: Does match any string that ends with 'abc'.
 - `... abc ...`: Does match any string that contains at least one 'abc'.
@@ -91,7 +91,7 @@ Should we need to match a string surrounded by double quotes, double them in the
 
 or escape those double quotes at the beginning and end:
 
-- `\"abc\"`: Also does match the string '"abc"' only. (there)
+- `\"abc\"`: Also does match the string '"abc"' only.
 
 ##### Some special SSPs:
 
