@@ -1,6 +1,6 @@
 # Simple String Pattern
 
-A **Simple String Pattern** (a.k.a. **SSP**) is a very simple yet well defined pattern used to match a string.  
+A **Simple String Pattern** (a.k.a. **SSP**) is a very simple yet well defined pattern format used to match a string.  
 A **simple-string-pattern** is also a name of the library to dealing with _Simple String Patterns_, [here](#simple-string-pattern-library) in this document.
 
 Unlike [Regular Expressions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions), _Simple String Pattern_ intentionally has only a few features, to be very easy to read and understand.
@@ -39,21 +39,23 @@ console.log("絵文字: 😀");
 
 In the code example above, there are SSPs within those `//=>` comments.
 
-As you see, the SSP really is a string that may contain spaces and some escaped characters, optionally double-quoted, possibly surrounded by three dots ("...") on either side.
+As you can see, the SSP really is a string that may contain spaces and some escaped characters, optionally double-quoted, possibly surrounded by three dots ("...") on either side.
 
-> Some effort has been made to make the **SSP** to be well defined, hence it has its own [SSP Grammar](#ssp-grammar).
+#### Solid Background
+
+From the very beginning, **SSP** format aims to be well defined, hence it has its own [SSP Grammar](#ssp-grammar).
 
 ## Basic SSP Examples
 
-- `abc`: Does match the string 'abc' only.
-- `" abc"`: Does match the string ' abc' only. Double quotes ensure that leading and trailing spaces are significant. Those outer double quotes are not part of the search.
-- `"" abc""`: Does match the string '" abc"' only.
-- `abc ...`: Does match any string that starts with 'abc'.
-- `... abc`: Does match any string that ends with 'abc'.
-- `... abc ...`: Does match any string that contains at least one 'abc'.
-- `... " a"b"c" ...`: Does match any string that contains at least one ' a"b"c'.
+- `abc`: Does match the string '`abc`' only.
+- `" abc"`: Does match the string '` abc`' only. Double quotes ensure that leading and trailing spaces are significant. Those outer double quotes are not part of the search.
+- `"" abc""`: Does match the string '`" abc"`' only.
+- `abc ...`: Does match any string that starts with '`abc`'.
+- `... abc`: Does match any string that ends with '`abc`'.
+- `... abc ...`: Does match any string that contains at least one '`abc`'.
+- `... " a"b"c" ...`: Does match any string that contains at least one '` a"b"c`'.
 - `... \n ...`: Does match any string that contains at least one newline character (i.e. expect the output to be multi-line one).
-- `... \\ ...`: Does match any string that contains at least one backslash character.
+- `... \\ ...`: Does match any string that contains at least one backslash character (`\`). In SSP, some special characters use escape sequence, so does the backslash character itself. 
 
 ## The Great Escape
 
@@ -81,16 +83,18 @@ Some special characters (such as the newline) can be written in an SSP using **e
 
 > For a complete SSP definition, see the [SSP Grammar](#ssp-grammar) chapter.
 
-## SSP Examples:
+## SSP Types:
+
+Depending on where in the pattern the partial mark is, the pattern is one of four types: *Full*, *Start*, *End* and *Middle*.
 
 1. `Hello\n "World"`: The _Full Pattern_ example. There is only a _Pattern Body_ (`Hello\n "World"`) in the _Full Pattern_, without any _Partial Marks_.  
-This _Full Pattern_ does match the string 'Hello\n "World"'.
+This _Full Pattern_ does match the string '`Hello\n "World"`'.
 2. <code>"Hello&nbsp;" ...</code>: The _Start Pattern_. Consists of a _Pattern Body_ (<code>Hello&nbsp;</code>) and a _Partial Mark_ (`...`) at the end. Here, the _Pattern Body_ is leading-and-trailing-space significant.  
-This _Start Pattern_ match any string that begins with 'Hello '.
+This _Start Pattern_ match any string that begins with '`Hello `'.
 3. `... World"`: The _End Pattern_. With the leading _Partial Mark_, followed by a _Pattern Body_ (`World"`). Being not surrounded by double quotes, the _Pattern Body_ does not contain significant leading or trailing spaces.  
-This _End Pattern_ does match any string that ends with 'World"'.
+This _End Pattern_ does match any string that ends with '`World"`'.
 4. `... Wo ...`: The _Middle Pattern_, with a _Pattern Body_ (`Wo`), surrounded by _Pattern Marks_.  
-This _Middle Pattern_ does match any string that contains the string 'Wo'.
+This _Middle Pattern_ does match any string that contains the string '`Wo`'.
 
 
 All of these SSP examples match this multi-line string input:
@@ -104,16 +108,16 @@ Hello
 
 Because of special meaning of double quotes surrouding the pattern body:
 
-- `"abc"`: Does match the string 'abc' only.
-- `"... abc ..."`: Does match the string '... abc ...'.
+- `"abc"`: Does match the string '`abc`' only.
+- `"... abc ..."`: Does match the string '`... abc ...`'.
 
 Should we need to match a string surrounded by double quotes, double them in the SSP:
 
-- `""abc""`: Does match the string '"abc"' only.
+- `""abc""`: Does match the string '`"abc"`' only.
 
 or escape those double quotes at the beginning and end:
 
-- `\"abc\"`: Also does match the string '"abc"' only.
+- `\"abc\"`: Also does match the string '`"abc"`' only.
 
 #### Some special SSPs:
 
