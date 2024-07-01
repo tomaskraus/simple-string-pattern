@@ -105,7 +105,7 @@ Hello
  "World"
 ```
 
-#### On Double Quotes:
+## On Double Quotes:
 
 Because of special meaning of double quotes surrouding the pattern body:
 
@@ -120,15 +120,16 @@ or escape those double quotes at the beginning and end:
 
 - `\"abc\"`: Also does match the string '`"abc"`' only.
 
-#### Some special SSPs:
+## Some special SSPs:
 
-- `""` full empty pattern (does match the empty input only)
-- `""...` start empty pattern (does match everything)
-- `...""` end empty pattern (does match everything)
-- `...""...` middle empty pattern (does match everything)
-- `..."..."...` middle pattern that does match any string containing three consecutive dots
+- `""` the full empty pattern (does match the empty input only)
+- `""...` the start empty pattern (does match everything)
+- `...""` the end empty pattern (does match everything)
+- `...""...` the middle empty pattern (does match everything)
+- `"."` the full pattern that does match one dot (`.`).
+- `..."..."...` the middle pattern that does match any string containing three consecutive dots
 
-#### Invalid SSP Examples:
+## Invalid SSP Examples:
 
 The empty string is not a valid SSP. Use `""` as an SSP that does (and only) match the empty input.
 
