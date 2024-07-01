@@ -201,6 +201,8 @@ const patt = new SSP('Hello,\\n "World"!');
 
 From the above example, the _patt_ object holds this pattern: `Hello,\n "World"!`
 
+> SSP constructor throws an _Error_ if its argument is not a valid SSP string.
+
 #### 2. parse() method
 
 Static _parse()_ method creates SSP instance from an input string "as is", escaping newlines and other line breaks:
@@ -213,6 +215,8 @@ const patt = SSP.parse(s);
 ```
 
 From the above example, the _patt_ object holds this pattern: `Hello\n world!`
+
+> _SSP.parse()_ method throws an _Error_ if a valid SSP cannot be created from its argument.
 
 ### value() method
 
