@@ -10,7 +10,8 @@ FULL_PATTERN 	-> PBODY			{% d => ({ type: "F", ...d[0] }) %}
 # Partial pattern
 PARTIAL_PATTERN -> START_PATTERN 	{% id %}
 				| END_PATTERN 		{% id %}
-				| MIDDLE_PATTERN	{% id %}		
+				| MIDDLE_PATTERN	{% id %}
+
 START_PATTERN 	-> PBODY (_):* PMARK 				{% d => ({ type: "S", ...d[0], 
 											  					value: `${d[0].value} ${PART_MARK}`}) %}
 END_PATTERN 	-> PMARK (_):* PBODY				{% d => ({ type: "E", ...d[2], 
