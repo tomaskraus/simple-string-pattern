@@ -1,4 +1,4 @@
-# "Simple String Pattern" grammar
+# "Simple String Pattern" (SSP) grammar
 # Uses a "Nearley Parser" syntax, https://nearley.js.org/
 
 Main  -> 
@@ -22,8 +22,9 @@ MIDDLE_PATTERN  -> PMARK (_):* PBODY (_):* PMARK    {% d => ({ type: "M", ...d[2
                                                         value: `${PART_MARK} ${d[2].value} ${PART_MARK}`}) %}
 
 # Pattern Body
+# cannot start nor end with a space ( ) nor a dot (.)
 PBODY -> CHAR                       {% ([fst]) => ({ value: fst[0], body: fst[0] }) %}
-      | CHAR (INNER_CHAR):* CHAR    {% 
+      | CHAR (EXTENDED_CHAR):* CHAR    {% 
                                         (d) => {
                                           const res = { value: d[0] + d[1].join("") + d[2]}
                                           res.body = isDoubleQuoted(res.value)
@@ -34,23 +35,23 @@ PBODY -> CHAR                       {% ([fst]) => ({ value: fst[0], body: fst[0]
                                     %}
 
 # Partial Mark        
-PMARK -> PM_CHAR PM_CHAR PM_CHAR
+PMARK -> DOT DOT DOT
 
-# Characters allowed in the body of the Pattern
-# ASCII chars without: first 20 chars, a dot, and a backslash
+# A character inside the pattern's body, i.e. not the first nor the last one.
+EXTENDED_CHAR  -> CHAR | DOT | _  
+
+# Characters allowed in the whole body of the Pattern, even in the first or the last position.
+# ASCII chars except: first 19 chars, a space, a dot, and a backslash
 CHAR  -> [\u0021-\u002D]      # ASCII
 CHAR  -> [\u002F-\u005B]      # ASCII
 CHAR  -> [\u005D-\u007E]      # ASCII
 # non ASCII chars, various alphabets
 CHAR  -> [\u0080-\uD7FF]        
-# non ASCII: some Emojis.
+# non ASCII: some Emojis
 CHAR  -> EMOJI_CHAR
 
 # escape sequence
-CHAR  -> ESCAPE_SEQ    
-
-# a character inside the pattern's body, i.e. not the leading nor trailing one
-INNER_CHAR  -> CHAR | PM_CHAR | _    
+CHAR  -> ESCAPE_SEQ      
 
 # space character
 _ -> " "    
@@ -59,7 +60,7 @@ _ -> " "
 ESCAPE_SEQ  -> "\\\\" | "\\t" | "\\r" | "\\n" |"\\f" | "\\b" | "\\\"" | "\\'" | "\\`"     
 
 # Partial Mark Character
-PM_CHAR -> "."
+DOT -> "."
 
 # Selected Emoji Unicode Blocks (https://www.compart.com/en/unicode/block)
 EMOJI_CHAR  -> 
@@ -73,8 +74,8 @@ EMOJI_CHAR  ->
 
 # postprocessor utilities
 @{%
-    const PM_CHAR = ".";
-    const PART_MARK = PM_CHAR + PM_CHAR + PM_CHAR;
+    const DOT = ".";
+    const PART_MARK = DOT + DOT + DOT;
     const isDoubleQuoted = s => s.length > 1 
       && s[0] === '"' 
       && s[s.length - 1] === '"';
