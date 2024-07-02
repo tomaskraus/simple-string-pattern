@@ -6,7 +6,7 @@ Main  ->
       | PARTIAL_PATTERN             {% id %}
 
 # Full Pattern
-FULL_PATTERN -> PBODY               {% d => ({ type: "F", ...d[0] }) %}
+FULL_PATTERN -> PBODY               {% ([pbody]) => ({ type: "F", ...pbody }) %}
 
 # Partial pattern
 PARTIAL_PATTERN ->
@@ -23,46 +23,61 @@ MIDDLE_PATTERN  -> PMARK (_):* PBODY (_):* PMARK    {% d => ({ type: "M", ...d[2
 
 # Pattern Body
 # cannot start nor end with a space ( ) nor a dot (.)
-PBODY -> TRIMMED_BODY | EXACT_BODY
+PBODY -> 
+        SPACE_TRIMMED_BODY          {% id %}
+      | SPACE_EXACT_BODY            {% id %}
 # no leading or trailing spaces inside this type of pattern body
-TRIMMED_BODY ->
-        CHAR                                {% ([fst]) => ({ value: fst[0], body: fst[0] }) %}
-      | CHAR (EXTENDED_CHAR):* CHAR         {% composeBodyValue(true) %}
-      | CHAR (EXTENDED_CHAR):* DQUOTE       {% composeBodyValue(true) %}
-      | DQUOTE (EXTENDED_CHAR):* CHAR       {% composeBodyValue(true) %}
+SPACE_TRIMMED_BODY ->
+               CHAR                                {% (char) => ({ value: id(char), body: id(char)}) %}
+             | CHAR (EXTENDED_CHAR):* CHAR         {% composeBody %}
+             | CHAR (EXTENDED_CHAR):* DQUOTE       {% composeBody %}
+             | DQUOTE (EXTENDED_CHAR):* CHAR       {% composeBody %}
 
 # If the exact body type is parsed, the outermost quotes are meant to be omitted in the result.
 # It is the way to create the pattern body with leading and/or trailing spaces.
-EXACT_BODY -> DQUOTE (EXTENDED_CHAR):* DQUOTE   {% composeBodyValue(false) /*strips outermost double quotes*/ %}
+SPACE_EXACT_BODY -> DQUOTE (EXTENDED_CHAR):* DQUOTE   {% composeInnerBody /*strips outermost double quotes*/ %}
 
 # Double Quote character
-DQUOTE -> "\""
+DQUOTE -> "\""              {% id %}
 
 # Partial Mark
-PMARK -> DOT DOT DOT
+PMARK -> DOT DOT DOT        {% id %}
 
 # A character inside the pattern's body, i.e. not the first nor the last one.
-EXTENDED_CHAR  -> CHAR | _ | DOT | DQUOTE
+EXTENDED_CHAR  -> 
+                 CHAR       {% id %}
+               | _          {% id %}
+               | DOT        {% id %}
+               | DQUOTE     {% id %}
 
 # Characters allowed in the whole body of the Pattern, even in the first or the last position.
 # ASCII chars except: first 19 chars, a space ( ), a double quote ("), a dot (.), and a backslash (\)
-CHAR  -> [\u0021]              # ASCII
-CHAR  -> [\u0023-\u002D]      # ASCII
-CHAR  -> [\u002F-\u005B]      # ASCII
-CHAR  -> [\u005D-\u007E]      # ASCII
+CHAR  -> [\u0021]           {% id %}
+CHAR  -> [\u0023-\u002D]    {% id %}
+CHAR  -> [\u002F-\u005B]    {% id %}
+CHAR  -> [\u005D-\u007E]    {% id %}
 # non ASCII chars, various alphabets
-CHAR  -> [\u0080-\uD7FF]
+CHAR  -> [\u0080-\uD7FF]    {% id %}
 # non ASCII: some Emojis
-CHAR  -> EMOJI_CHAR
+CHAR  -> EMOJI_CHAR         {% d => id(d).join('') /*compose an emoji character*/ %}
 
 # escape sequence
-CHAR  -> ESCAPE_SEQ
+CHAR  -> ESCAPE_SEQ         {% id %}
 
 # space character
-_ -> " "
+_ -> " "                    {% id %}
 
 # escape sequences
-ESCAPE_SEQ  -> "\\\\" | "\\t" | "\\r" | "\\n" |"\\f" | "\\b" | "\\\"" | "\\'" | "\\`"
+ESCAPE_SEQ  -> 
+              "\\\\"        {% id %}
+            | "\\t"         {% id %}
+            | "\\r"         {% id %}
+            | "\\n"         {% id %}
+            |"\\f"          {% id %}
+            | "\\b"         {% id %}
+            | "\\\""        {% id %}
+            | "\\'"         {% id %}
+            | "\\`"         {% id %}
 
 # Partial Mark Character
 DOT -> "."
@@ -82,9 +97,13 @@ EMOJI_CHAR  ->
     const DOT = ".";
     const PART_MARK = DOT + DOT + DOT;
 
-    const  composeBodyValue = (shouldAddOuterChars) => ([startChar, middleChars, endChar]) => {
+    const _composeBodyValue = (shouldAddOuterChars) => ([startChar, middleChars, endChar]) => {
         const innerStr = middleChars.join("");
-        const fullStr = startChar + innerStr + endChar;
+        const fullStr = startChar + innerStr + endChar;        
         return { value: fullStr, body: (shouldAddOuterChars ? fullStr : innerStr) }
     }
+    
+    // just for optimization
+    const composeBody = _composeBodyValue(true);
+    const composeInnerBody = _composeBodyValue(false);
 %}
