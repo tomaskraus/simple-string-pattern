@@ -23,19 +23,19 @@ MIDDLE_PATTERN  -> PMARK (_):* PBODY (_):* PMARK    {% d => ({ type: "M", ...d[2
 
 # Pattern Body
 # cannot start nor end with a space ( ) nor a dot (.)
-PBODY -> 
+PBODY ->
         SPACE_TRIMMED_BODY          {% id %}
       | SPACE_EXACT_BODY            {% id %}
 # no leading or trailing spaces inside this type of pattern body
 SPACE_TRIMMED_BODY ->
-               CHAR                                {% (char) => ({ value: id(char), body: id(char)}) %}
-             | CHAR (EXTENDED_CHAR):* CHAR         {% composeBody %}
-             | CHAR (EXTENDED_CHAR):* DQUOTE       {% composeBody %}
-             | DQUOTE (EXTENDED_CHAR):* CHAR       {% composeBody %}
+               CHAR                           {% (char) => ({ value: id(char), body: id(char)}) %}
+              | CHAR (INNER_CHAR):* CHAR      {% composeBody %}
+              | CHAR (INNER_CHAR):* DQUOTE    {% composeBody %}
+              | DQUOTE (INNER_CHAR):* CHAR    {% composeBody %}
 
 # If the exact body type is parsed, the outermost quotes are meant to be omitted in the result.
 # It is the way to create the pattern body with leading and/or trailing spaces.
-SPACE_EXACT_BODY -> DQUOTE (EXTENDED_CHAR):* DQUOTE   {% composeInnerBody /*strips outermost double quotes*/ %}
+SPACE_EXACT_BODY -> DQUOTE (INNER_CHAR):* DQUOTE    {% composeInnerBody /*strips outermost double quotes*/ %}
 
 # Double Quote character
 DQUOTE -> "\""              {% id %}
@@ -44,11 +44,16 @@ DQUOTE -> "\""              {% id %}
 PMARK -> DOT DOT DOT        {% id %}
 
 # A character inside the pattern's body, i.e. not the first nor the last one.
-EXTENDED_CHAR  -> 
-                 CHAR       {% id %}
-               | _          {% id %}
-               | DOT        {% id %}
-               | DQUOTE     {% id %}
+INNER_CHAR  ->
+              CHAR              {% id %}
+            | RESERVED_CHAR     {% id %}
+
+# characters that have a special meaning based on their position in the SSP
+RESERVED_CHAR   ->
+                  _             {% id %}
+                | DOT           {% id %}
+                | DQUOTE        {% id %}
+
 
 # Characters allowed in the whole body of the Pattern, even in the first or the last position.
 # ASCII chars except: first 19 chars, a space ( ), a double quote ("), a dot (.), and a backslash (\)
@@ -68,7 +73,7 @@ CHAR  -> ESCAPE_SEQ         {% id %}
 _ -> " "                    {% id %}
 
 # escape sequences
-ESCAPE_SEQ  -> 
+ESCAPE_SEQ  ->
               "\\\\"        {% id %}
             | "\\t"         {% id %}
             | "\\r"         {% id %}
@@ -99,10 +104,10 @@ EMOJI_CHAR  ->
 
     const _composeBodyValue = (shouldAddOuterChars) => ([startChar, middleChars, endChar]) => {
         const innerStr = middleChars.join("");
-        const fullStr = startChar + innerStr + endChar;        
+        const fullStr = startChar + innerStr + endChar;
         return { value: fullStr, body: (shouldAddOuterChars ? fullStr : innerStr) }
     }
-    
+
     // just for optimization
     const composeBody = _composeBodyValue(true);
     const composeInnerBody = _composeBodyValue(false);
