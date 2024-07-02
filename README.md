@@ -45,7 +45,7 @@ As you can see, the SSP really is a string that may contain spaces and some esca
 
 From the very beginning, **SSP** format aims to be well defined, hence it has its own [SSP Grammar](#ssp-grammar).
 
-## Basic SSP Examples
+## SSP Examples
 
 - `abc`: Does match the string '`abc`' only.
 - `" abc"`: Does match the string '` abc`' only. Double quotes ensure that leading and trailing spaces are significant. Those outer double quotes are not part of the search.
