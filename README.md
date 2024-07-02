@@ -54,8 +54,10 @@ From the very beginning, **SSP** format aims to be well defined, hence it has it
 - `... abc`: Does match any string that ends with '`abc`'.
 - `... abc ...`: Does match any string that contains at least one '`abc`'.
 - `... " a"b"c" ...`: Does match any string that contains at least one '` a"b"c`'.
-- `... \n ...`: Does match any string that contains at least one newline character (i.e. expect the output to be multi-line one).
-- `... \\ ...`: Does match any string that contains at least one backslash character (`\`). In SSP, some special characters use escape sequence, so does the backslash character itself.
+- `... \n ...`: Does match any string that contains at least one *newline* character.
+- `... \\ ...`: Does match any string that contains at least one backslash character (`\`). Note that the *backslash* character is also escaped.
+
+> All SSPs are _case sensitive_: `abc` does match the string '`abc`' but not the '`ABc`'
 
 ## The Great Escape
 
@@ -79,21 +81,29 @@ ssp = [partial-mark] pattern-body [partial-mark]
 
 The pattern body itself can start and end with double quote (`"`), to make its leading and trailing spaces significant.
 
-Some special characters (such as the newline) can be written in an SSP using **escape-sequence**, with a backslash (`\`) as an escape symbol.  
+Some special characters (such as the *newline* one) can be written in an SSP using **escape-sequence**, with a backslash (`\`) as an escape symbol.  
  Escape the backslash itself to use the backslash in an SSP.
 
 > For a complete SSP definition, see the [SSP Grammar](#ssp-grammar) chapter.
 
 ## SSP Types:
 
-Depending on where in the pattern the partial mark is, the pattern is one of four types: _Full_, _Start_, _End_ and _Middle_.  
-Only the _Full_ pattern matches the input as a whole.
+Depending on where in the pattern the *partial mark* (`...`) is, the pattern is one of four types: 
+
+1. _Full_: `XXX`
+2. _Start_: `XXX ...` 
+3. _End_: `... XXX`
+4. _Middle_: `... XXX ...`  
+
+Only the _Full Pattern_ matches the input as a whole.
+
+There are some real examples:
 
 1. `Hello\n "World"`: The _Full Pattern_ example. There is only a _Pattern Body_ (`Hello\n "World"`) in the _Full Pattern_, without any _Partial Marks_.  
    This _Full Pattern_ does match the whole string '`Hello\n "World"`'.
 2. <code>"Hello&nbsp;" ...</code>: The _Start Pattern_. Consists of a _Pattern Body_ (<code>Hello&nbsp;</code>) and a _Partial Mark_ (`...`) at the end. Here, the _Pattern Body_ is leading-and-trailing-space significant.  
    This _Start Pattern_ match any string that begins with '`Hello `'.
-3. `... World"`: The _End Pattern_. With the leading _Partial Mark_, followed by a _Pattern Body_ (`World"`). Being not surrounded by double quotes, the _Pattern Body_ does not contain significant leading or trailing spaces.  
+3. `... World"`: The _End Pattern_. With the leading _Partial Mark_, followed by a _Pattern Body_ (`World"`). Being not surrounded by double quotes, the _Pattern Body_ does not preserve  leading or trailing spaces.  
    This _End Pattern_ does match any string that ends with '`World"`'.
 4. `... Wo ...`: The _Middle Pattern_, with a _Pattern Body_ (`Wo`), surrounded by _Pattern Marks_.  
    This _Middle Pattern_ does match any string that contains the string '`Wo`'.
@@ -147,9 +157,9 @@ is not a valid SSP, as it contains an unescaped newline character.
 The string `.` is not a valid SSP, nor any string consisting of space and dot characters only.  
 To create valid SSPs for those strings, enclose them in double quotes:
 
-1. `"."`: Does match an input of one dot.
-2. `... " . " ...`: Does match an input that contains at least one dot surrounded by a space character.
-3. `"..."`: Does match three dots.
+1. `"."`
+
+The string `"` is not a valid SSP. Enclose it with double quotes: `"""`, or escape it: `\"`
 
 ## SSP Grammar
 
@@ -161,8 +171,7 @@ The **simple-string-pattern** library contains an object that encapsulates the S
 
 This library is:
 
-- Typed
-- With `d.ts` for javascript
+- Typed, with `d.ts` for javascript
 - Well tested, with 100% code coverage
 
 ## Installation
