@@ -16,24 +16,24 @@ console.log(1 + 1 === 2);
 //=> true
 
 // Here, we only write the beginning of what we expect to be the output
-console.log("abcd".split(""));
+console.log('abcd'.split(''));
 //=> [ 'a', 'b' ...
 
 // What the end of the output should look like (including the space at the end.)
-console.log("Thats All! ");
+console.log('Thats All! ');
 //=> ... "All! "
 
 // What the (possibly multi-line) output should contain
-console.log("Line: 155 \nError: Division by zero!");
+console.log('Line: 155 \nError: Division by zero!');
 //=> ... zero ...
 
 // In the expected output,
 // we can describe common special characters using escape sequences
-console.log("a" + String.fromCharCode(9) + "1");
+console.log('a' + String.fromCharCode(9) + '1');
 //=> a\t1
 
 // And yes we can go beyond the ASCII:
-console.log("絵文字: 😀");
+console.log('絵文字: 😀');
 //=> 絵文字: 😀
 ```
 
@@ -54,8 +54,8 @@ From the very beginning, **SSP** format aims to be well defined, hence it has it
 - `... abc`: Does match any string that ends with '`abc`'.
 - `... abc ...`: Does match any string that contains at least one '`abc`'.
 - `... " a"b"c" ...`: Does match any string that contains at least one '` a"b"c`'.
-- `... \n ...`: Does match any string that contains at least one *newline* character.
-- `... \\ ...`: Does match any string that contains at least one backslash character (`\`). Note that the *backslash* character is also escaped.
+- `... \n ...`: Does match any string that contains at least one _newline_ character.
+- `... \\ ...`: Does match any string that contains at least one backslash character (`\`). Note that the _backslash_ character is also escaped.
 
 > All SSPs are _case sensitive_: `abc` does match the string '`abc`' but not the '`ABc`'
 
@@ -81,19 +81,19 @@ ssp = [partial-mark] pattern-body [partial-mark]
 
 The pattern body itself can start and end with double quote (`"`), to make its leading and trailing spaces significant.
 
-Some special characters (such as the *newline* one) can be written in an SSP using **escape-sequence**, with a backslash (`\`) as an escape symbol.  
+Some special characters (such as the _newline_ one) can be written in an SSP using **escape-sequence**, with a backslash (`\`) as an escape symbol.  
  Escape the backslash itself to use the backslash in an SSP.
 
 > For a complete SSP definition, see the [SSP Grammar](#ssp-grammar) chapter.
 
 ## SSP Types:
 
-Depending on where in the pattern the *partial mark* (`...`) is, the pattern is one of four types: 
+Depending on where in the pattern the _partial mark_ (`...`) is, the pattern is one of four types:
 
 1. _Full_: `XXX`
-2. _Start_: `XXX ...` 
+2. _Start_: `XXX ...`
 3. _End_: `... XXX`
-4. _Middle_: `... XXX ...`  
+4. _Middle_: `... XXX ...`
 
 Only the _Full Pattern_ matches the input as a whole.
 
@@ -103,7 +103,7 @@ There are some real examples:
    This _Full Pattern_ does match the whole string '`Hello\n "World"`'.
 2. <code>"Hello&nbsp;" ...</code>: The _Start Pattern_. Consists of a _Pattern Body_ (<code>Hello&nbsp;</code>) and a _Partial Mark_ (`...`) at the end. Here, the _Pattern Body_ is leading-and-trailing-space significant.  
    This _Start Pattern_ match any string that begins with '`Hello `'.
-3. `... World"`: The _End Pattern_. With the leading _Partial Mark_, followed by a _Pattern Body_ (`World"`). Being not surrounded by double quotes, the _Pattern Body_ does not preserve  leading or trailing spaces.  
+3. `... World"`: The _End Pattern_. With the leading _Partial Mark_, followed by a _Pattern Body_ (`World"`). Being not surrounded by double quotes, the _Pattern Body_ does not preserve leading or trailing spaces.  
    This _End Pattern_ does match any string that ends with '`World"`'.
 4. `... Wo ...`: The _Middle Pattern_, with a _Pattern Body_ (`Wo`), surrounded by _Pattern Marks_.  
    This _Middle Pattern_ does match any string that contains the string '`Wo`'.
@@ -187,13 +187,13 @@ $ npm i simple-string-pattern
 Typescript / ES module:
 
 ```ts
-import * as SSP from "simple-string-pattern";
+import SSP from 'simple-string-pattern';
 ```
 
 Javascript / CommonJS:
 
 ```js
-const SSP = require("simple-string-pattern");
+const SSP = require('simple-string-pattern');
 ```
 
 ### Create a Pattern
@@ -241,62 +241,43 @@ console.log(SSP.value());
 //=> "... Hello\n world!"
 ```
 
-### On SSP objects equality
 
-Two SSP objects are considered equal if their pattern string representations (available via their _value()_ method) are equal:
-
-```js
-const s1 = `Hello
- world!`;
-const patt1 = SSP.parse(s1);
-
-const s2 = "Hello\n world!";
-const patt2 = SSP.parse(s2);
-
-console.log(s1 === s2);
-//=> true
-console.log(patt1.value() === patt2.value());
-//=> true
-console.log(patt1.value());
-//=> Hello\n world!
-```
-
-Furthermore:
-
-```js
-const s3 = "Hello\\n world!";
-const patt3 = new SSP(s3);
-
-console.log(s2 === s3); // these strings used to create SSP are not equal...
-//=> false
-console.log(patt3.value() === patt1.value()); // ...although, resulting SSPs could.
-//=> true
-console.log(patt3.value() === patt2.value());
-//=> true
-console.log(patt3.value());
-//=> Hello\n world!
-```
-
-The following holds true:
-
-```js
-const patt1 = new SSP("hello");
-const patt2 = new SSP(patt1.value());
-console.log(patt1.value() === patt2.value());
-//=> true
-```
 
 ### test() method
 
 Returns _true_ if pattern does match the string parameter, _false_ otherwise:
 
 ```js
-const patt = new SSP("... lazy ...");
+const patt = new SSP('... lazy ...');
 
-console.log(patt.test("See?\nWhat a lazy fox!"));
+console.log(patt.test('See?\nWhat a lazy fox!'));
 //=> true
-console.log(patt.test("lazy"));
+console.log(patt.test('lazy'));
 //=> true
-console.log(patt.test("See?\nWhat a l-a-z-y fox!"));
+console.log(patt.test('See?\nWhat a l-a-z-y fox!'));
 //=> false
+```
+
+### On SSP objects equality
+
+Two SSP objects are considered equal if they do match the same inputs.  
+If both SSP object holds the same SSP string (available via their *value()* method), then those two SSP object are equal. However, two SSP object can be equal without having the same SSP string: 
+
+```js
+const patt1 = new SSP('"abc"');
+const patt2 = new SSP('abc');
+
+console.log(patt1.value() === patt2.value());
+//=> false
+console.log(patt1.test('abc') && patt2.test('abc'));
+//=> true
+```
+
+The following holds true:
+
+```js
+const patt1 = new SSP('hello');
+const patt2 = new SSP(patt1.value());
+console.log(patt1.value() === patt2.value());
+//=> true
 ```
