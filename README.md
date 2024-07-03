@@ -33,8 +33,8 @@ console.log('a' + String.fromCharCode(9) + '1');
 //=> a\t1
 
 // And yes we can go beyond the ASCII:
-console.log('絵文字: 😀');
-//=> 絵文字: 😀
+console.log('絵文字: 😀.');
+//=> 絵文字: 😀.
 ```
 
 In the code example above, there are SSPs within those `//=>` comments.
@@ -71,7 +71,7 @@ Example: `Hello \n \\backslashes\\!` SSP written in a file becomes a <code>'Hell
 _Simple String Pattern_ (a.k.a. SSP) is a **trimmed** string with some **escape sequences**, intended to match **multi-line** _input_ in a **case-sensitive** manner.
 
 SSP consist of _Pattern Body_ (i.e. exact string to match), which can be surrounded by a _*Partial Mark*_ (`...`) on either side, to match the beginning, the end or the inside of the possible _input_.  
-Spaces between pattern body and partial mark are insignificant.
+There must be at least one space between a _Partial Mark_ and _Pattern Body_.
 
 A simplified SSP structure (in an [ABNF](https://en.wikipedia.org/wiki/Augmented_Backus%E2%80%93Naur_form)):
 
@@ -79,7 +79,7 @@ A simplified SSP structure (in an [ABNF](https://en.wikipedia.org/wiki/Augmented
 ssp = [partial-mark] pattern-body [partial-mark]
 ```
 
-The pattern body itself can start and end with double quote (`"`), to make its leading and trailing spaces significant.
+The pattern body itself can be surrounded by double quotes (`"`), to make its leading and trailing spaces significant.
 
 Some special characters (such as the _newline_ one) can be written in an SSP using **escape-sequence**, with a backslash (`\`) as an escape symbol.  
  Escape the backslash itself to use the backslash in an SSP.
@@ -126,17 +126,24 @@ Should we need to match a string surrounded by double quotes, double them in the
 
 - `""abc""`: Does match the string '`"abc"`' only.
 
-or escape those double quotes at the beginning and end:
+or escape those double quotes at the beginning and the end of a pattern:
 
-- `\"abc\"`: Also does match the string '`"abc"`' only.
+- `\"abc\"`: Does match the string '`"abc"`' only. 
+
+
+If a pattern body is not completely surrounded by double quotes, that outermost double-quote character is treated as a normal one - i.e. is a part of a search:
+
+- `abc"`: Does match the string '`abc"`' only. 
 
 ## Some special SSPs:
 
-- `""` the full empty pattern (does match the empty input only)
-- `""...` the start empty pattern (does match everything)
-- `...""` the end empty pattern (does match everything)
-- `...""...` the middle empty pattern (does match everything)
-- `"."` the full pattern that does match one dot (`.`).
+- `""` the full empty pattern, does match the empty input only
+- `.` the full pattern that does match one dot only
+- `"` the full pattern that does match one double-quote character only
+- `"" ...` the start empty pattern (does match everything)
+- `... ""` the end empty pattern (does match everything)
+- `... "" ...` the middle empty pattern (does match everything)
+- `"..."` the full pattern that does match three dots only
 - `..."..."...` the middle pattern that does match any string containing three consecutive dots
 
 ## Invalid SSP Examples:
@@ -154,12 +161,13 @@ The string:
 
 is not a valid SSP, as it contains an unescaped newline character.
 
-The string `.` is not a valid SSP, nor any string consisting of space and dot characters only.  
-To create valid SSPs for those strings, enclose them in double quotes:
+The string <code>...</code> is not a valid SSP, as it would be handled as an SSP with partial mark, with an empty pattern body (plus, that mark is not space separated), which is not allowed.
 
-1. `"."`
-
-The string `"` is not a valid SSP. Enclose it with double quotes: `"""`, or escape it: `\"`
+> Tips to fix an invalid SSP: 
+> 1. Enclose it with double_quotes.  
+> 2. Use escape sequences for control characters, such as `\t` for tabs and `\n` for newlines
+> 3. Be sure to escape a backslash `\` if you want to use it as an ordinary character.
+> 4. Do not escape chars that do not need to escape.
 
 ## SSP Grammar
 
@@ -241,8 +249,6 @@ console.log(SSP.value());
 //=> "... Hello\n world!"
 ```
 
-
-
 ### test() method
 
 Returns _true_ if pattern does match the string parameter, _false_ otherwise:
@@ -261,7 +267,7 @@ console.log(patt.test('See?\nWhat a l-a-z-y fox!'));
 ### On SSP objects equality
 
 Two SSP objects are considered equal if they do match the same inputs.  
-If both SSP object holds the same SSP string (available via their *value()* method), then those two SSP object are equal. However, two SSP object can be equal without having the same SSP string: 
+If both SSP object holds the same SSP string (available via their _value()_ method), then those two SSP object are equal. However, two SSP object can be equal without having the same SSP string:
 
 ```js
 const patt1 = new SSP('"abc"');
@@ -276,7 +282,7 @@ console.log(patt1.test('abc') && patt2.test('abc'));
 The following holds true:
 
 ```js
-const patt1 = new SSP('hello');
+// we assume the patt1 is defined and is a valid SSP object.
 const patt2 = new SSP(patt1.value());
 console.log(patt1.value() === patt2.value());
 //=> true

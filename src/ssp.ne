@@ -1,6 +1,6 @@
 # "Simple String Pattern" (SSP) grammar
 # Uses a "Nearley Parser" syntax, https://nearley.js.org/
-
+# Some rules are there just to reduce grammar's ambiguity
 Main  ->
         FULL_PATTERN                {% id %}
       | PARTIAL_PATTERN             {% id %}
@@ -14,45 +14,82 @@ PARTIAL_PATTERN ->
                 | END_PATTERN       {% id %}
                 | MIDDLE_PATTERN    {% id %}
 
-START_PATTERN -> PBODY (_):* PMARK                  {% d => ({ type: "S", ...d[0],
+START_PATTERN -> PBODY (_):+ PMARK                  {% d => ({ type: "S", ...d[0],
                                                         value: `${d[0].value} ${PART_MARK}`}) %}
-END_PATTERN -> PMARK (_):* PBODY                    {% d => ({ type: "E", ...d[2],
+END_PATTERN -> PMARK (_):+ PBODY                    {% d => ({ type: "E", ...d[2],
                                                         value: `${PART_MARK} ${d[2].value}`}) %}
-MIDDLE_PATTERN  -> PMARK (_):* PBODY (_):* PMARK    {% d => ({ type: "M", ...d[2],
+MIDDLE_PATTERN  -> PMARK (_):+ PBODY (_):+ PMARK    {% d => ({ type: "M", ...d[2],
                                                         value: `${PART_MARK} ${d[2].value} ${PART_MARK}`}) %}
 
 # Pattern Body
-# cannot start nor end with a space ( ) nor a dot (.)
+# cannot start nor end with a space ( )
 PBODY ->
-        SPACE_TRIMMED_BODY          {% id %}
-      | SPACE_EXACT_BODY            {% id %}
-# no leading or trailing spaces inside this type of pattern body
-SPACE_TRIMMED_BODY ->
-               CHAR                           {% (char) => ({ value: id(char), body: id(char)}) %}
-              | CHAR (INNER_CHAR):* CHAR      {% composeBody %}
-              | CHAR (INNER_CHAR):* DQUOTE    {% composeBody %}
-              | DQUOTE (INNER_CHAR):* CHAR    {% composeBody %}
+        SPACE_EXACT_BODY            {% id %}
+      | SPACE_TRIMMED_BODY          {% id %}
 
 # If the exact body type is parsed, the outermost quotes are meant to be omitted in the result.
 # It is the way to create the pattern body with leading and/or trailing spaces.
-SPACE_EXACT_BODY -> DQUOTE (INNER_CHAR):* DQUOTE    {% composeInnerBody /*strips outermost double quotes*/ %}
+SPACE_EXACT_BODY -> DQUOTE  INNER_TEXT  DQUOTE    {% ([ldq, body, pdq]) =>  {
+                                                    const pObject = pObjectFromSingle(body) /*strips outermost double-quotes*/
+                                                    return { ...pObject, value: ldq + body + pdq } /*surround value with double-quotes*/
+                                                    } %}
+
+# no leading or trailing spaces in this type of pattern body
+# can start or end with no more than 2 consecutive dots
+SPACE_TRIMMED_BODY ->
+        CHAR_OR_DQUOTE                            {% pObjectFromSingle %}
+      | MAX_2_DOTS                                {% pObjectFromSingle %}
+
+      | CHAR_OR_DQUOTE  MAX_2_DOTS                {% pObjectFromArray %}
+      | MAX_2_DOTS  CHAR_OR_DQUOTE                {% pObjectFromArray %}
+      | MAX_2_DOTS INNER_CHAR_NO_DOT MAX_2_DOTS   {% pObjectFromArray %}
+
+      | BODY_START  INNER_TEXT  BODY_END          {% pObjectFromArray %}
+      | BODY_START  INNER_TEXT  DQUOTE            {% pObjectFromArray %}
+      | DQUOTE  INNER_TEXT  BODY_END              {% pObjectFromArray %}
+
+BODY_START ->
+             CHAR                             {% id %}
+            | MAX_2_DOTS  INNER_CHAR_NO_DOT   {% flatten %}
+
+BODY_END ->
+             CHAR                             {% id %}
+            | INNER_CHAR_NO_DOT  MAX_2_DOTS   {% flatten %}
+
+
+MAX_2_DOTS ->
+             DOT              {% id %}
+           | DOT DOT          {% flatten %}
+
+INNER_TEXT -> (INNER_CHAR):*  {% flatten %}
 
 # Double Quote character
-DQUOTE -> "\""              {% id %}
+DQUOTE -> "\""                {% id %}
+
+CHAR_OR_DQUOTE ->
+                 CHAR         {% id %}
+               | DQUOTE       {% id %}
 
 # Partial Mark
-PMARK -> DOT DOT DOT        {% id %}
+PMARK -> DOT DOT DOT          {% flatten %}
 
 # A character inside the pattern's body, i.e. not the first nor the last one.
 INNER_CHAR  ->
-              CHAR              {% id %}
-            | RESERVED_CHAR     {% id %}
+              CHAR            {% id %}
+            | RESERVED_CHAR   {% id %}
+
+#inner char except a dot
+INNER_CHAR_NO_DOT ->
+                    CHAR                    {% id %}
+                  | RESERVED_CHAR_NO_DOT    {% id %}
 
 # characters that have a special meaning based on their position in the SSP
 RESERVED_CHAR   ->
-                  _             {% id %}
-                | DOT           {% id %}
-                | DQUOTE        {% id %}
+                  DOT                   {% id %}
+                | RESERVED_CHAR_NO_DOT  {% id %}
+RESERVED_CHAR_NO_DOT  ->
+                        _               {% id %}
+                      | DQUOTE          {% id %}
 
 
 # Characters allowed in the whole body of the Pattern, even in the first or the last position.
@@ -85,7 +122,7 @@ ESCAPE_SEQ  ->
             | "\\`"         {% id %}
 
 # Partial Mark Character
-DOT -> "."
+DOT -> "."      {% id %}
 
 # Selected Emoji Unicode Blocks (https://www.compart.com/en/unicode/block)
 EMOJI_CHAR  ->
@@ -102,13 +139,16 @@ EMOJI_CHAR  ->
     const DOT = ".";
     const PART_MARK = DOT + DOT + DOT;
 
-    const _composeBodyValue = (shouldAddOuterChars) => ([startChar, middleChars, endChar]) => {
-        const innerStr = middleChars.join("");
-        const fullStr = startChar + innerStr + endChar;
-        return { value: fullStr, body: (shouldAddOuterChars ? fullStr : innerStr) }
+    const pObjectFromSingle = (s) => {
+    const val = Array.isArray(s) ? id(s) : s;
+    return { value: val, body: val }
+  }
+
+    const pObjectFromArray = (arr) => {
+      const val = flatten(arr);
+      return { value: val, body: val}
     }
 
-    // just for optimization
-    const composeBody = _composeBodyValue(true);
-    const composeInnerBody = _composeBodyValue(false);
+    const flatten = arr =>
+      arr.reduce((acc, s) => acc + (Array.isArray(s) ? flatten(s) : s), '');
 %}
