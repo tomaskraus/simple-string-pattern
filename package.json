@@ -49,8 +49,7 @@
     "typescript": "^4.8.0"
   },
   "dependencies": {
-    "@types/unescape-js": "^1.0.2",
-    "split": "^1.0.1",
-    "unescape-js": "^1.1.4"
+    "safe-string-literal": "^1.0.5",
+    "split": "^1.0.1"
   }
 }

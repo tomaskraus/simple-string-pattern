@@ -5,7 +5,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const nearley_1 = __importDefault(require("nearley"));
 const ssp_1 = __importDefault(require("../.temp/ssp"));
-const unescape_js_1 = __importDefault(require("unescape-js"));
+// import jsStringEscape from 'js-string-escape';
+const safe_string_literal_1 = require("safe-string-literal");
 /**
  * encapsulates the SSP (simple string pattern) and provides
  * methods to create an SSP and test SSP against a string input.
@@ -18,10 +19,13 @@ class SimpleStringPattern {
     constructor(pattern) {
         this.parser = new nearley_1.default.Parser(nearley_1.default.Grammar.fromCompiled(ssp_1.default));
         this.parser.feed(pattern);
+        if (this.parser.results.length === 0) {
+            throw new Error(`Parser: pattern not recognized: (${pattern})`);
+        }
         const res = this.parser.results[0];
         // console.log('ssp parsed', res);
         this.pattern = res.value;
-        this.body = (0, unescape_js_1.default)(res.body);
+        this.body = (0, safe_string_literal_1.unescape)(res.body);
         switch (res.type) {
             case 'S':
                 this._type = SimpleStringPattern.TYPE_START;
@@ -60,6 +64,20 @@ class SimpleStringPattern {
             default:
                 return this.body === input;
         }
+    }
+    static parse(input) {
+        const escapedInput = (0, safe_string_literal_1.escape)(input, '\'"\\`');
+        let dquotedInput = escapedInput;
+        if (escapedInput.length > 1 &&
+            escapedInput.startsWith('"') &&
+            escapedInput.endsWith('"')) {
+            dquotedInput = `"${escapedInput}"`;
+        }
+        else if (escapedInput.startsWith(' ') || escapedInput.endsWith(' ')) {
+            dquotedInput = `"${escapedInput}"`;
+        }
+        // console.log(`escaped: (${input}), (${escapedInput})`);
+        return new this(dquotedInput);
     }
 }
 exports.default = SimpleStringPattern;

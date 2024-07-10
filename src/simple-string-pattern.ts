@@ -1,6 +1,7 @@
 import nearley from 'nearley';
 import ssp_grammar from '../.temp/ssp';
-import unescape from 'unescape-js';
+// import jsStringEscape from 'js-string-escape';
+import {escape, unescape} from 'safe-string-literal';
 
 /**
  * encapsulates the SSP (simple string pattern) and provides
@@ -25,6 +26,9 @@ export default class SimpleStringPattern {
   constructor(pattern: string) {
     this.parser = new nearley.Parser(nearley.Grammar.fromCompiled(ssp_grammar));
     this.parser.feed(pattern);
+    if (this.parser.results.length === 0) {
+      throw new Error(`Parser: pattern not recognized: (${pattern})`);
+    }
     const res = this.parser.results[0];
     // console.log('ssp parsed', res);
     this.pattern = res.value;
@@ -69,6 +73,23 @@ export default class SimpleStringPattern {
       default:
         return this.body === input;
     }
+  }
+
+  static parse(input: string) {
+    const escapedInput = escape(input, '\'"\\`');
+    let dquotedInput = escapedInput;
+    if (
+      escapedInput.length > 1 &&
+      escapedInput.startsWith('"') &&
+      escapedInput.endsWith('"')
+    ) {
+      dquotedInput = `"${escapedInput}"`;
+    } else if (escapedInput.startsWith(' ') || escapedInput.endsWith(' ')) {
+      dquotedInput = `"${escapedInput}"`;
+    }
+
+    // console.log(`escaped: (${input}), (${escapedInput})`);
+    return new this(dquotedInput);
   }
 
   static {}

@@ -27,4 +27,5 @@ export default class SimpleStringPattern {
      * @returns true if this SPP object match that input. False otherwise.
      */
     test(input: string): boolean;
+    static parse(input: string): SimpleStringPattern;
 }
