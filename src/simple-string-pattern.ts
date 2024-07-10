@@ -77,7 +77,7 @@ export default class SimpleStringPattern {
   /**
    *
    * @param input Tries to create an SSP object from the input. That SSP does match that input.
-   * @returns A new SSP object.
+   * @returns A new SSP object. Its value is always of a Full Pattern type.
    * @throws Error if cannot create a valid SSP object from the input.
    *
    */

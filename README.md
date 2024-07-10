@@ -128,12 +128,11 @@ Should we need to match a string surrounded by double quotes, double them in the
 
 or escape those double quotes at the beginning and the end of a pattern:
 
-- `\"abc\"`: Does match the string '`"abc"`' only. 
-
+- `\"abc\"`: Does match the string '`"abc"`' only.
 
 If a pattern body is not completely surrounded by double quotes, that outermost double-quote character is treated as a normal one - i.e. is a part of a search:
 
-- `abc"`: Does match the string '`abc"`' only. 
+- `abc"`: Does match the string '`abc"`' only.
 
 ## Some special SSPs:
 
@@ -163,8 +162,9 @@ is not a valid SSP, as it contains an unescaped newline character.
 
 The string <code>...</code> is not a valid SSP, as it would be handled as an SSP with partial mark, with an empty pattern body (plus, that mark is not space separated), which is not allowed.
 
-> Tips to fix an invalid SSP: 
-> 1. Enclose it with double_quotes.  
+> Tips to fix an invalid SSP:
+>
+> 1. Enclose it with double_quotes.
 > 2. Use escape sequences for control characters, such as `\t` for tabs and `\n` for newlines
 > 3. Be sure to escape a backslash `\` if you want to use it as an ordinary character.
 > 4. Do not escape chars that do not need to escape.
@@ -238,11 +238,13 @@ Unlike SSP constructor, the _parse()_ method can create an empty SSP object from
 ```js
 const patt = SSP.parse('');
 
-console.log(patt.value())
+console.log(patt.value());
 //=> ""
 ```
 
 > _SSP.parse()_ method throws an _Error_ if a valid SSP cannot be created from its argument.
+
+_SSP.parse()_ always returns a _Full Pattern_.
 
 ### value() method
 
