@@ -76,6 +76,9 @@ export default class SimpleStringPattern {
   }
 
   static parse(input: string) {
+    if (input.length === 0) {
+      return new this('""');
+    }
     const escapedInput = escape(input, '\'"\\`');
     let dquotedInput = escapedInput;
     if (

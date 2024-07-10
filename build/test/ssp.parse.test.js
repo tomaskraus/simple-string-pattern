@@ -5,9 +5,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const simple_string_pattern_1 = __importDefault(require("#src/simple-string-pattern"));
 describe('Parse: failures', () => {
-    test('does not accept an empty string', () => {
-        expect(() => simple_string_pattern_1.default.parse('')).toThrow();
-    });
     test('Does not accept a string containing those escape sequences that are not allowed.', () => {
         expect(() => simple_string_pattern_1.default.parse('\\ ')).toThrow();
         expect(() => simple_string_pattern_1.default.parse('a\\a')).toThrow();
@@ -15,6 +12,9 @@ describe('Parse: failures', () => {
     });
 });
 describe('Parse: simple', () => {
+    test('Parses an empty string', () => {
+        expect(simple_string_pattern_1.default.parse('').value()).toEqual('""');
+    });
     test('Parses strings with no specials (enclosing spaces and double quotes, escapes)', () => {
         ['hello', "That's a 😀! きáéÜΔ", 'a'].forEach(input => {
             expect(simple_string_pattern_1.default.parse(input).value()).toEqual(input);

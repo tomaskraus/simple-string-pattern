@@ -66,6 +66,9 @@ class SimpleStringPattern {
         }
     }
     static parse(input) {
+        if (input.length === 0) {
+            return new this('""');
+        }
         const escapedInput = (0, safe_string_literal_1.escape)(input, '\'"\\`');
         let dquotedInput = escapedInput;
         if (escapedInput.length > 1 &&

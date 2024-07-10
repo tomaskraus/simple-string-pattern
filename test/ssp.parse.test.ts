@@ -1,10 +1,6 @@
 import SSP from '#src/simple-string-pattern';
 
 describe('Parse: failures', () => {
-  test('does not accept an empty string', () => {
-    expect(() => SSP.parse('')).toThrow();
-  });
-
   test('Does not accept a string containing those escape sequences that are not allowed.', () => {
     expect(() => SSP.parse('\\ ')).toThrow();
     expect(() => SSP.parse('a\\a')).toThrow();
@@ -13,6 +9,10 @@ describe('Parse: failures', () => {
 });
 
 describe('Parse: simple', () => {
+  test('Parses an empty string', () => {
+    expect(SSP.parse('').value()).toEqual('""');
+  });
+
   test('Parses strings with no specials (enclosing spaces and double quotes, escapes)', () => {
     ['hello', "That's a 😀! きáéÜΔ", 'a'].forEach(input => {
       expect(SSP.parse(input).value()).toEqual(input);
