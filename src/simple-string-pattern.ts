@@ -85,7 +85,7 @@ export default class SimpleStringPattern {
     if (input.length === 0) {
       return new this('""');
     }
-    const escapedInput = escape(input, '\'"\\`');
+    const escapedInput = escape(input, '\'"`');
     let dquotedInput = escapedInput;
     if (
       escapedInput.length > 1 &&
