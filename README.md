@@ -222,7 +222,7 @@ From the above example, the _patt_ object holds this pattern: `Hello,\n "World"!
 
 #### 2. parse() method
 
-Static _parse()_ method creates SSP instance from an input string "as is", escaping newlines and other line breaks:
+_parse()_ static method creates an SSP instance from an input string "as is", escaping newlines and other line breaks:
 
 ```js
 const s = `Hello
@@ -232,6 +232,15 @@ const patt = SSP.parse(s);
 ```
 
 From the above example, the _patt_ object holds this pattern: `Hello\n world!`
+
+Unlike SSP constructor, the _parse()_ method can create an empty SSP object from an empty input:
+
+```js
+const patt = SSP.parse('');
+
+console.log(patt.value())
+//=> ""
+```
 
 > _SSP.parse()_ method throws an _Error_ if a valid SSP cannot be created from its argument.
 
