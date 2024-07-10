@@ -27,8 +27,8 @@ describe('Parse: escapes', () => {
       ['a \t \b\t b', 'a \\t \\b\\t b'],
       ['\\', '\\\\'],
       ['c:\\windows\\system', 'c:\\\\windows\\\\system'],
-    ].forEach(([input, expactedValue]) => {
-      expect(SSP.parse(input).value()).toEqual(expactedValue);
+    ].forEach(([input, expectedValue]) => {
+      expect(SSP.parse(input).value()).toEqual(expectedValue);
     });
   });
 });
@@ -39,8 +39,8 @@ describe('Parse: leading and trailing spaces', () => {
       [' abc', '" abc"'],
       ['abc ', '"abc "'],
       [' abc ', '" abc "'],
-    ].forEach(([input, expactedValue]) => {
-      expect(SSP.parse(input).value()).toEqual(expactedValue);
+    ].forEach(([input, expectedValue]) => {
+      expect(SSP.parse(input).value()).toEqual(expectedValue);
     });
   });
 
@@ -50,8 +50,8 @@ describe('Parse: leading and trailing spaces', () => {
       ['"abc', '"abc'],
       ['"abc"', '""abc""'],
       [' abc"', '" abc""'],
-    ].forEach(([input, expactedValue]) => {
-      expect(SSP.parse(input).value()).toEqual(expactedValue);
+    ].forEach(([input, expectedValue]) => {
+      expect(SSP.parse(input).value()).toEqual(expectedValue);
     });
   });
 });
