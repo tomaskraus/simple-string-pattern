@@ -19,12 +19,6 @@
     "experimentalSpecifierResolution": "node",
     "require": ["tsconfig-paths/register"]
   },
-  "include": [
-    "src/**/*.ts",
-    "test/**/*.ts",
-    ".temp/interpret.js",
-    ".temp/ssp.ts",
-    ".temp/fixtures.ts"
-  ]
+  "include": ["src/**/*.ts", "test/**/*.ts", "src/ssp-ts.ts"]
   // "exclude": ["test/**/*.ts"]
 }
