@@ -74,6 +74,13 @@ export default class SimpleStringPattern {
     }
   }
 
+  /**
+   *
+   * @param input Tries to create an SSP object from the input. That SSP does match that input.
+   * @returns A new SSP object.
+   * @throws Error if cannot create a valid SSP object from the input.
+   *
+   */
   static parse(input: string) {
     if (input.length === 0) {
       return new this('""');
