@@ -7,8 +7,9 @@ const simple_string_pattern_1 = __importDefault(require("#src/simple-string-patt
 const test_utils_1 = __importDefault(require("./test-utils"));
 describe('Partial Pattern: match', () => {
     test('Start Pattern,End Pattern and Middle Pattern do match corresponding inputs.', () => {
-        const patterns = [
+        [
             ['Hello', 'Hello'],
+            ['Hello, World', 'Hello, World'],
             ["That's a 😀! きáéÜΔ", "That's a 😀! きáéÜΔ"],
             ['That\'s "inside" it.', 'That\'s "inside" it.'],
             [
@@ -26,8 +27,7 @@ describe('Partial Pattern: match', () => {
                 'A literal form of newline escape sequence: \\\\n.',
                 'A literal form of newline escape sequence: \\n.',
             ],
-        ];
-        patterns.forEach(([pattStr, input]) => {
+        ].forEach(([pattStr, input]) => {
             [test_utils_1.default.toStartPatt, test_utils_1.default.toMiddlePatt].forEach(pattModfn => {
                 const patt = new simple_string_pattern_1.default(pattModfn(pattStr));
                 [test_utils_1.default.id, (s) => test_utils_1.default.addSuffix('aa', s)].forEach(inputModFn => {
@@ -53,10 +53,27 @@ describe('Partial Pattern: match', () => {
     });
 });
 describe('Partial Pattern: match empty string:', () => {
-    test('A "" Partial Pattern does match an empty input.', () => {
-        expect(new simple_string_pattern_1.default('... ""').test('')).toBeTruthy();
-        expect(new simple_string_pattern_1.default('"" ...').test('')).toBeTruthy();
-        expect(new simple_string_pattern_1.default('... "" ...').test('')).toBeTruthy();
+    test('A "" Partial empty Pattern does match any input.', () => {
+        [
+            '',
+            'Hello',
+            'Hello, World',
+            "That's a 😀! きáéÜΔ",
+            'That\'s "inside" it.',
+            ' leading and trailing spaces matter.  ',
+            '"Double quote at the start.',
+            '.',
+            '..',
+            '. .',
+            'Two line\n text',
+            '" (\', ") "',
+            '\\ escaped backslash: \\.',
+            'A literal form of newline escape sequence: \\\\n.',
+        ].forEach(input => {
+            expect(new simple_string_pattern_1.default('... ""').test(input)).toBeTruthy();
+            expect(new simple_string_pattern_1.default('"" ...').test(input)).toBeTruthy();
+            expect(new simple_string_pattern_1.default('... "" ...').test(input)).toBeTruthy();
+        });
     });
 });
 describe('Partial Pattern: no match:', () => {

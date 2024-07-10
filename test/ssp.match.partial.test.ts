@@ -3,8 +3,9 @@ import u from './test-utils';
 
 describe('Partial Pattern: match', () => {
   test('Start Pattern,End Pattern and Middle Pattern do match corresponding inputs.', () => {
-    const patterns = [
+    [
       ['Hello', 'Hello'],
+      ['Hello, World', 'Hello, World'],
       ["That's a 😀! きáéÜΔ", "That's a 😀! きáéÜΔ"],
       ['That\'s "inside" it.', 'That\'s "inside" it.'],
       [
@@ -22,9 +23,7 @@ describe('Partial Pattern: match', () => {
         'A literal form of newline escape sequence: \\\\n.',
         'A literal form of newline escape sequence: \\n.',
       ],
-    ];
-
-    patterns.forEach(([pattStr, input]) => {
+    ].forEach(([pattStr, input]) => {
       [u.toStartPatt, u.toMiddlePatt].forEach(pattModfn => {
         const patt = new SSP(pattModfn(pattStr));
         [u.id, (s: string) => u.addSuffix('aa', s)].forEach(inputModFn => {
@@ -53,10 +52,27 @@ describe('Partial Pattern: match', () => {
 });
 
 describe('Partial Pattern: match empty string:', () => {
-  test('A "" Partial Pattern does match an empty input.', () => {
-    expect(new SSP('... ""').test('')).toBeTruthy();
-    expect(new SSP('"" ...').test('')).toBeTruthy();
-    expect(new SSP('... "" ...').test('')).toBeTruthy();
+  test('A "" Partial empty Pattern does match any input.', () => {
+    [
+      '',
+      'Hello',
+      'Hello, World',
+      "That's a 😀! きáéÜΔ",
+      'That\'s "inside" it.',
+      ' leading and trailing spaces matter.  ',
+      '"Double quote at the start.',
+      '.',
+      '..',
+      '. .',
+      'Two line\n text',
+      '" (\', ") "',
+      '\\ escaped backslash: \\.',
+      'A literal form of newline escape sequence: \\\\n.',
+    ].forEach(input => {
+      expect(new SSP('... ""').test(input)).toBeTruthy();
+      expect(new SSP('"" ...').test(input)).toBeTruthy();
+      expect(new SSP('... "" ...').test(input)).toBeTruthy();
+    });
   });
 });
 
