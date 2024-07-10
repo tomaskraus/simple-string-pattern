@@ -5,54 +5,65 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const simple_string_pattern_1 = __importDefault(require("#src/simple-string-pattern"));
 describe('Full Pattern: constructor errors', () => {
-    test('does not accept an empty string', () => {
+    test('Does not accept an empty string.', () => {
         expect(() => new simple_string_pattern_1.default('')).toThrow();
     });
-    test('does not accept a string which starts and/or ends with space ( )', () => {
+    test('Does not accept a string which starts and/or ends with space ( ).', () => {
         ['a ', ' a', ' a ', ' ', 'ab ', ' ab', ' ab ', '  a b '].forEach(s => {
             expect(() => new simple_string_pattern_1.default(s)).toThrow();
         });
     });
-    test('does not accept strings that contain unescaped control chars', () => {
+    test('Does not accept strings that contain unescaped control chars.', () => {
         const tabStr = String.fromCharCode(9);
         expect(() => new simple_string_pattern_1.default(tabStr)).toThrow();
         const unescapedMultilineStr = 'a\nb';
         expect(() => new simple_string_pattern_1.default(unescapedMultilineStr)).toThrow();
     });
-    test('does not accept a string containing those escape sequences that are not allowed', () => {
+    test('Does not accept a string containing those escape sequences that are not allowed.', () => {
         expect(() => new simple_string_pattern_1.default('\\ ')).toThrow();
         expect(() => new simple_string_pattern_1.default('a\\a')).toThrow();
+    });
+    test('Does not accept a string that ends with single backslash character.', () => {
+        expect(() => new simple_string_pattern_1.default('\\')).toThrow();
+        expect(() => new simple_string_pattern_1.default(' \\')).toThrow();
+        expect(() => new simple_string_pattern_1.default('hello\\')).toThrow();
+    });
+    test('Does not accept a string that ends with odd number of consecutive backslash characters.', () => {
+        expect(() => new simple_string_pattern_1.default('a\\')).toThrow();
+        expect(() => new simple_string_pattern_1.default('a\\\\\\')).toThrow();
+        expect(() => new simple_string_pattern_1.default('\\\\\\')).toThrow();
+        expect(() => new simple_string_pattern_1.default('\\ta\\\\\\')).toThrow();
     });
 });
 // ----------------------------------------------------------------------------
 describe('Full Pattern: constructor and getters - single character', () => {
-    test('does allow one character (ascii)', () => {
+    test('Does allow one character (ascii)', () => {
         const patt = new simple_string_pattern_1.default('a');
         expect(patt.value()).toEqual('a');
     });
-    test('does allow one character (non-ascii)', () => {
+    test('Does allow one character (non-ascii)', () => {
         const patt = new simple_string_pattern_1.default('き');
         expect(patt.value()).toEqual('き');
     });
-    test('does allow one character (emoji)', () => {
+    test('Does allow one character (emoji)', () => {
         const patt = new simple_string_pattern_1.default('😀');
         expect(patt.value()).toEqual('😀');
     });
-    test('does allow a dot character (.)', () => {
+    test('Does allow a dot character (.)', () => {
         const patt = new simple_string_pattern_1.default('.');
         expect(patt.value()).toEqual('.');
     });
-    test('does allow a double-quote character (")', () => {
+    test('Does allow a double-quote character (")', () => {
         const patt = new simple_string_pattern_1.default('"');
         expect(patt.value()).toEqual('"');
     });
 });
 describe('Full Pattern: constructor and getters - multiple characters', () => {
-    test('does allow empty value by passing a string that contains two double-quotes.', () => {
+    test('Does allow empty value by passing a string that contains two double-quotes.', () => {
         const patt = new simple_string_pattern_1.default('""');
         expect(patt.value()).toEqual('""');
     });
-    test('does allow normal strings, without leading and trailing spaces', () => {
+    test('Does allow normal strings, without leading and trailing spaces', () => {
         [
             'Hello',
             'Hello World!',
@@ -65,13 +76,13 @@ describe('Full Pattern: constructor and getters - multiple characters', () => {
             expect(patt.value()).toEqual(s);
         });
     });
-    test('does allow string with dots at the start and/or end, still being in a pattern body', () => {
+    test('Does allow string with dots at the start and/or end, still being in a pattern body', () => {
         ['.', '..', '.. ..', '. .', '.Hello.', '..Hello..'].forEach(s => {
             const patt = new simple_string_pattern_1.default(s);
             expect(patt.value()).toEqual(s);
         });
     });
-    test('does allow string with double quotes', () => {
+    test('Does allow string with double quotes', () => {
         [
             'That\'s "inside" it.',
             '" Double quotes ensure that leading and trailing spaces matter in the matching process.  "',
@@ -136,30 +147,30 @@ describe('Partial Pattern: constructor errors', () => {
 });
 // ----------------------------------------------------------------------------
 describe('Partial Pattern: constructor and getters - single character', () => {
-    test('does allow one character (ascii)', () => {
+    test('Does allow one character (ascii)', () => {
         expect(new simple_string_pattern_1.default('... a').value()).toEqual('... a');
     });
-    test('does allow one character (non-ascii)', () => {
+    test('Does allow one character (non-ascii)', () => {
         expect(new simple_string_pattern_1.default('き ...').value()).toEqual('き ...');
     });
-    test('does allow one character (emoji)', () => {
+    test('Does allow one character (emoji)', () => {
         expect(new simple_string_pattern_1.default('... 😀 ...').value()).toEqual('... 😀 ...');
     });
-    test('does allow a dot character (.)', () => {
+    test('Does allow a dot character (.)', () => {
         expect(new simple_string_pattern_1.default('... .').value()).toEqual('... .');
     });
-    test('does allow a double-quote character (")', () => {
+    test('Does allow a double-quote character (")', () => {
         expect(new simple_string_pattern_1.default('... "').value()).toEqual('... "');
     });
 });
 // ----------------------------------------------------------------------------
 describe('Partial Pattern: constructor and getters - multiple characters', () => {
-    test('does allow empty value by passing a string that contains two double-quotes.', () => {
+    test('Does allow empty value by passing a string that contains two double-quotes.', () => {
         expect(new simple_string_pattern_1.default('... ""').value()).toEqual('... ""');
         expect(new simple_string_pattern_1.default('"" ...').value()).toEqual('"" ...');
         expect(new simple_string_pattern_1.default('... "" ...').value()).toEqual('... "" ...');
     });
-    test('does allow normal strings, without leading and trailing spaces', () => {
+    test('Does allow normal strings, without leading and trailing spaces', () => {
         [
             '... Hello',
             'Hello World! ...',
@@ -169,7 +180,7 @@ describe('Partial Pattern: constructor and getters - multiple characters', () =>
             expect(new simple_string_pattern_1.default(s).value()).toEqual(s);
         });
     });
-    test('does allow string with dots at the start and/or end, still being in a pattern body', () => {
+    test('Does allow string with dots at the start and/or end, still being in a pattern body', () => {
         ['.', '..', '.. ..', '. .', '.Hello.', '..Hello..'].forEach(s => {
             const sp = '... ' + s;
             expect(new simple_string_pattern_1.default(sp).value()).toEqual(sp);
@@ -179,7 +190,7 @@ describe('Partial Pattern: constructor and getters - multiple characters', () =>
             expect(new simple_string_pattern_1.default(sp3).value()).toEqual(sp3);
         });
     });
-    test('does allow string with double quotes', () => {
+    test('Does allow string with double quotes', () => {
         [
             'That\'s "inside" it.',
             '" Double quotes ensure that leading and trailing spaces matter in the matching process.  "',
