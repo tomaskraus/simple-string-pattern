@@ -4,8 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const nearley_1 = __importDefault(require("nearley"));
-const ssp_1 = __importDefault(require("../.temp/ssp"));
-// import jsStringEscape from 'js-string-escape';
+const ssp_ts_1 = __importDefault(require("#src/ssp-ts"));
 const safe_string_literal_1 = require("safe-string-literal");
 /**
  * encapsulates the SSP (simple string pattern) and provides
@@ -17,7 +16,7 @@ class SimpleStringPattern {
      * @param pattern A string in SSP notation.
      */
     constructor(pattern) {
-        this.parser = new nearley_1.default.Parser(nearley_1.default.Grammar.fromCompiled(ssp_1.default));
+        this.parser = new nearley_1.default.Parser(nearley_1.default.Grammar.fromCompiled(ssp_ts_1.default));
         this.parser.feed(pattern);
         if (this.parser.results.length === 0) {
             throw new Error(`Parser: pattern not recognized: (${pattern})`);

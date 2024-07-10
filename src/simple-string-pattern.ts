@@ -1,6 +1,5 @@
 import nearley from 'nearley';
-import ssp_grammar from '../.temp/ssp';
-// import jsStringEscape from 'js-string-escape';
+import ssp_grammar from '#src/ssp-ts';
 import {escape, unescape} from 'safe-string-literal';
 
 /**

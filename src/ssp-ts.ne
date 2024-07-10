@@ -40,7 +40,7 @@ SPACE_EXACT_BODY -> DQUOTE  INNER_TEXT  DQUOTE    {% ([ldq, body, pdq]) =>  {
 # can start or end with no more than 2 consecutive dots
 SPACE_TRIMMED_BODY ->
         CHAR_OR_DQUOTE                            {% pObjectFromSingle %}
-      | MAX_2_DOTS                                {% pObjectFromSingle %}
+      | MAX_2_DOTS                                {% pObjectFromArray %}
 
       | CHAR_OR_DQUOTE  MAX_2_DOTS                {% pObjectFromArray %}
       | MAX_2_DOTS  CHAR_OR_DQUOTE                {% pObjectFromArray %}
@@ -61,7 +61,7 @@ BODY_END ->
 
 MAX_2_DOTS ->
              DOT              {% id %}
-           | DOT DOT          {% id %}
+           | DOT DOT          {% flatten %}
 
 INNER_TEXT -> (INNER_CHAR):*  {% flatten %}
 
@@ -121,7 +121,6 @@ ESCAPE_SEQ  ->
             | "\\b"         {% id %}
             | "\\\""        {% id %}
             | "\\'"         {% id %}
-            | "\\`"         {% id %}
 
 # Partial Mark Character
 DOT -> "."      {% id %}
@@ -141,7 +140,7 @@ EMOJI_CHAR  ->
     const DOT = ".";
     const PART_MARK = DOT + DOT + DOT;
 
-    const pObjectFromSingle = (d: string[]) => {
+    const pObjectFromSingle = (d: string | string[]) => {
     const val: string = Array.isArray(d) ? id(d) : d;
     return { value: val, body: val }
   }

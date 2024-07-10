@@ -17,7 +17,7 @@
     "prepare": "npm run compile",
     "pretest": "npm run compile",
     "posttest": "npm run lint",
-    "grammar": "npx nearleyc src/ssp-ts.ne > src/ssp.ts && tsc"
+    "grammar": "npx nearleyc src/ssp-ts.ne > src/ssp-ts.ts && tsc"
   },
   "keywords": [
     "test",
