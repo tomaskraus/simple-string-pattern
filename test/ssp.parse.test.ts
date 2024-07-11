@@ -1,13 +1,5 @@
 import SSP from '#src/simple-string-pattern';
 
-describe.skip('Parse: failures', () => {
-  test('Does not accept a string containing those escape sequences that are not allowed.', () => {
-    expect(() => SSP.parse('\\ ')).toThrow();
-    expect(() => SSP.parse('a\\a')).toThrow();
-    expect(() => SSP.parse('\\')).toThrow(); //single backslash character
-  });
-});
-
 describe('Parse: simple', () => {
   test('Parses an empty string', () => {
     expect(SSP.parse('').value()).toEqual('""');

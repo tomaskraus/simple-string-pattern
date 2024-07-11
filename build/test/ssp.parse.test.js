@@ -4,13 +4,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const simple_string_pattern_1 = __importDefault(require("#src/simple-string-pattern"));
-describe('Parse: failures', () => {
-    test('Does not accept a string containing those escape sequences that are not allowed.', () => {
-        expect(() => simple_string_pattern_1.default.parse('\\ ')).toThrow();
-        expect(() => simple_string_pattern_1.default.parse('a\\a')).toThrow();
-        expect(() => simple_string_pattern_1.default.parse('\\')).toThrow(); //single backslash character
-    });
-});
 describe('Parse: simple', () => {
     test('Parses an empty string', () => {
         expect(simple_string_pattern_1.default.parse('').value()).toEqual('""');
@@ -22,20 +15,14 @@ describe('Parse: simple', () => {
     });
 });
 describe('Parse: escapes', () => {
-    test('Excludes backslash from being escaped.', () => {
-        [
-            ['\\\\', '\\\\'],
-            ['c:\\\\windows\\\\system', 'c:\\\\windows\\\\system'],
-        ].forEach(([input, expactedValue]) => {
-            expect(simple_string_pattern_1.default.parse(input).value()).toEqual(expactedValue);
-        });
-    });
-    test('Parse: Special chars in a string are escaped.', () => {
+    test('Parse: Special chars and backslash character are escaped in a string.', () => {
         [
             ['Hello \nWorld!', 'Hello \\nWorld!'],
             ['a \t \b\t b', 'a \\t \\b\\t b'],
-        ].forEach(([input, expactedValue]) => {
-            expect(simple_string_pattern_1.default.parse(input).value()).toEqual(expactedValue);
+            ['\\', '\\\\'],
+            ['c:\\windows\\system', 'c:\\\\windows\\\\system'],
+        ].forEach(([input, expectedValue]) => {
+            expect(simple_string_pattern_1.default.parse(input).value()).toEqual(expectedValue);
         });
     });
 });
@@ -45,8 +32,8 @@ describe('Parse: leading and trailing spaces', () => {
             [' abc', '" abc"'],
             ['abc ', '"abc "'],
             [' abc ', '" abc "'],
-        ].forEach(([input, expactedValue]) => {
-            expect(simple_string_pattern_1.default.parse(input).value()).toEqual(expactedValue);
+        ].forEach(([input, expectedValue]) => {
+            expect(simple_string_pattern_1.default.parse(input).value()).toEqual(expectedValue);
         });
     });
     test('Makes an exact pattern if enclosing double-quotes are found.', () => {
@@ -55,8 +42,8 @@ describe('Parse: leading and trailing spaces', () => {
             ['"abc', '"abc'],
             ['"abc"', '""abc""'],
             [' abc"', '" abc""'],
-        ].forEach(([input, expactedValue]) => {
-            expect(simple_string_pattern_1.default.parse(input).value()).toEqual(expactedValue);
+        ].forEach(([input, expectedValue]) => {
+            expect(simple_string_pattern_1.default.parse(input).value()).toEqual(expectedValue);
         });
     });
 });
