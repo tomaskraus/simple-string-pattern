@@ -52,6 +52,7 @@ describe('Full Pattern: match', () => {
     });
     test('Does match escaped strings.', () => {
         const patterns = [
+            ['\\\\', '\\'],
             ['Two line\\n text', 'Two line\n text'],
             ['\\" (\\\', \\") \\"', '" (\', ") "'],
             ['\\\\ escaped backslash: \\\\.', '\\ escaped backslash: \\.'],
