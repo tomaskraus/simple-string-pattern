@@ -13,7 +13,7 @@ export default class SimpleStringPattern {
   public static readonly TYPE_MIDDLE = 0b11;
 
   private readonly pattern: string;
-  private readonly body: string;
+  private readonly _body: string;
   private readonly _type: number;
 
   private parser: nearley.Parser;
@@ -31,7 +31,7 @@ export default class SimpleStringPattern {
     const res = this.parser.results[0];
     // console.log('ssp parsed', res);
     this.pattern = res.value;
-    this.body = unescape(res.body);
+    this._body = unescape(res.body);
     switch (res.type) {
       case 'S':
         this._type = SimpleStringPattern.TYPE_START;
@@ -51,7 +51,7 @@ export default class SimpleStringPattern {
    *
    * @returns a simple string pattern
    */
-  value() {
+  public value() {
     return this.pattern;
   }
 
@@ -60,17 +60,17 @@ export default class SimpleStringPattern {
    * @param input a string to match
    * @returns true if this SPP object match that input. False otherwise.
    */
-  test(input: string) {
+  public test(input: string) {
     // console.log(`body: (${this.body}), input: (${input})`);
     switch (this._type) {
       case SimpleStringPattern.TYPE_START:
-        return input.startsWith(this.body);
+        return input.startsWith(this._body);
       case SimpleStringPattern.TYPE_END:
-        return input.endsWith(this.body);
+        return input.endsWith(this._body);
       case SimpleStringPattern.TYPE_MIDDLE:
-        return input.includes(this.body);
+        return input.includes(this._body);
       default:
-        return this.body === input;
+        return this._body === input;
     }
   }
 
@@ -81,7 +81,7 @@ export default class SimpleStringPattern {
    * @throws Error if cannot create a valid SSP object from the input.
    *
    */
-  static parse(input: string) {
+  public static parse(input: string) {
     if (input.length === 0) {
       return new this('""');
     }
@@ -93,12 +93,19 @@ export default class SimpleStringPattern {
       escapedInput.endsWith('"')
     ) {
       dquotedInput = `"${escapedInput}"`;
-    } else if (escapedInput.startsWith(' ') || escapedInput.endsWith(' ')) {
-      dquotedInput = `"${escapedInput}"`;
+    } else {
+      dquotedInput = this._sanitizeBorderSpace(dquotedInput);
     }
 
     // console.log(`escaped: (${input}), (${escapedInput})`);
     return new this(dquotedInput);
+  }
+
+  private static _sanitizeBorderSpace(str: string) {
+    if (str.startsWith(' ') || str.endsWith(' ')) {
+      return `"${str}"`;
+    }
+    return str;
   }
 
   static {}
