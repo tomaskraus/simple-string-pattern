@@ -75,6 +75,42 @@ export default class SimpleStringPattern {
   }
 
   /**
+   * Returns at least "the-same-matching", new SSP object with its body length being less or equal the original object's one.
+   * Value() of the SSP object returned can be of "Start Pattern" type.
+   * @param maxPatternLength A maximum number of characters new SSP object should contain (unicode).
+   *   Note that escape sequences (such as \n, \t, \\\\) count as one character.
+   * @returns "The-same-matching" partial pattern if maxPattern length is lower than this SSP object body length.
+   *   Returns a copy of original SSP object otherwise.
+   * @throws Error if maxPatternLength is negative.
+   * @throws Error if the SSP object pattern is either of End Pattern or Middle Pattern type.
+   */
+  public limitPatternLen(maxPatternLength: number): SimpleStringPattern {
+    if (maxPatternLength < 0) {
+      throw new Error(
+        `maxPatternLength argument should not be negative, is (${maxPatternLength}).`
+      );
+    }
+    if (
+      this._type === SimpleStringPattern.TYPE_MIDDLE ||
+      this._type === SimpleStringPattern.TYPE_END
+    ) {
+      throw new Error(
+        `Object pattern value (${this.value}) must be either of Full Pattern or Start Pattern.`
+      );
+    }
+
+    // console.log('body: ', this._body);
+    const pattChars = Array.from(this._body);
+    if (pattChars.length <= maxPatternLength) {
+      return new SimpleStringPattern(this.value());
+    }
+    const newPatternBody = pattChars.slice(0, maxPatternLength).join('');
+    // console.log('sliced:', slicedChars);
+    const fullPatt = SimpleStringPattern.parse(newPatternBody);
+    return new SimpleStringPattern(fullPatt.value() + ' ...');
+  }
+
+  /**
    *
    * @param input Tries to create an SSP object from the input. That SSP does match that input.
    * @returns A new SSP object. Its value is always of a Full Pattern type.

@@ -275,6 +275,31 @@ console.log(patt.test('See?\nWhat a l-a-z-y fox!'));
 //=> false
 ```
 
+### limitPatternLen() method
+
+Returns at least "the-same-matching", new SSP object with its body length being less or equal the original object's one.
+
+_value()_ of the SSP object returned can be of "Start Pattern" type.
+
+```js
+// squares: array of squared integers from 0 to 14
+const squares = new Array(15).fill(null).map((_, i) => i * i);
+
+const pattern = SSP.parse(squares);
+console.log(pattern.value());
+//=> 0,1,4,9,16,25,36,49,64,81,100,121,144,169,196
+
+const patternShortened = pattern.limitPatternLen(10);
+console.log(patternShortened.value());
+//=> 0,1,4,9,16 ...
+
+// Both pattern and patternShortened match the original input.
+console.log(pattern.test(squares.toString()));
+//=> true
+console.log(patternShortened.test(squares.toString()));
+//=> true
+```
+
 ### On SSP objects equality
 
 Two SSP objects are considered equal if they do match the same inputs.  
