@@ -167,7 +167,7 @@ The string <code>...</code> is not a valid SSP, as it would be handled as an SSP
 > 1. Enclose it with double_quotes.
 > 2. Use escape sequences for control characters, such as `\t` for tabs and `\n` for newlines
 > 3. Be sure to escape a backslash `\` if you want to use it as an ordinary character.
-> 4. Do not escape chars that do not need to escape.
+> 4. Do not escape characters that don't need to be escaped.
 
 ## SSP Grammar
 
