@@ -201,7 +201,7 @@ import SSP from 'simple-string-pattern';
 Javascript / CommonJS:
 
 ```js
-const SSP = require('simple-string-pattern');
+const SSP = require('simple-string-pattern').default;
 ```
 
 ### Create a Pattern
