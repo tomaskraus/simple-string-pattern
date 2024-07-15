@@ -36,6 +36,12 @@
   "engines": {
     "node": ">=18.0.0"
   },
+  "imports": {
+    "#src/*": {
+      "node": "./build/src/*.js",
+      "default": "./build/src/*.js"
+    }
+  },
   "devDependencies": {
     "@types/debug": "^4.1.8",
     "@types/jest": "^29.5.3",
