@@ -71,12 +71,12 @@ Example: `Hello \n \\backslashes\\!` SSP written in a file becomes a <code>'Hell
 _Simple String Pattern_ (a.k.a. SSP) is a **trimmed** string with some **escape sequences**, intended to match **multi-line** _input_ in a **case-sensitive** manner.
 
 SSP consist of _Pattern Body_ (i.e. exact string to match), which can be surrounded by a _*Partial Mark*_ (`...`) on either side, to match the beginning, the end or the inside of the possible _input_.  
-There must be at least one space between a _Partial Mark_ and _Pattern Body_.
+There must be exactly one space between a _Partial Mark_ and _Pattern Body_.
 
 A simplified SSP structure (in an [ABNF](https://en.wikipedia.org/wiki/Augmented_Backus%E2%80%93Naur_form)):
 
 ```abnf
-ssp = [partial-mark] pattern-body [partial-mark]
+ssp = [partial-mark space] pattern-body [space partial-mark]
 ```
 
 The pattern body itself can be surrounded by double quotes (`"`), to make its leading and trailing spaces significant.
@@ -319,7 +319,7 @@ The following holds true:
 
 ```js
 // we assume the patt1 is defined and is a valid SSP object.
-const patt2 = new SSP(patt1.value());
-console.log(patt1.value() === patt2.value());
+const patt3 = new SSP(patt1.value());
+console.log(patt1.value() === patt3.value());
 //=> true
 ```
