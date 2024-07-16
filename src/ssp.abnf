@@ -1,0 +1,34 @@
+; Simple String Pattern grammar in ABNF.
+; for ABNF, see https://en.wikipedia.org/wiki/Augmented_Backus%E2%80%93Naur_form
+; Inspired by JSON grammar ABNF:
+; https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON#full_json_grammar
+simple-string-pattern   = full-pattern / partial-pattern
+full-pattern            = pattern-body
+partial-pattern         = start-pattern /
+                          end-pattern /
+                          middle-pattern
+start-pattern           = pattern-body sp partial-mark
+end-pattern             = partial-mark sp pattern-body
+middle-pattern          = partial-mark sp pattern-body sp partial-mark
+pattern-body            = exact-body / trimmed-body
+exact-body              = dquote *ichar dquote
+trimmed-body            = char /        ; a body without leading and trailing spaces
+                          char *ichar char
+partial-mark    = %x2E.2E.2E    ; three dots
+sp              = %x20          ; space
+dquote          = %x22          ; double quote
+ichar           = sp / char     ; inner character
+char = unescaped /
+    escape (
+        %x5C /          ; \    backslash
+        %x74 /          ; t    tab
+        %x72 /          ; r    carriage return
+        %x6E /          ; n    line feed
+        %x66 /          ; f    form feed
+        %x62 /          ; b    backspace
+        %x22 /          ; "    quotation mark
+        %x27 /          ; '    single quote
+    )
+escape = %x5C           ; \    backslash
+unescaped   = %x21 / %x23-5C / %x5D-7E      ; all visible ASCII chars without space and backslash
+unescaped   /= %x7f-10FFFF                  ; the rest of Unicode characters

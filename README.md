@@ -171,7 +171,7 @@ The string <code>...</code> is not a valid SSP, as it would be handled as an SSP
 
 ## SSP Grammar
 
-There is a [Simple String Pattern Grammar](./src/ssp.ne) file that can be processed by [Nearley Parser](https://nearley.js.org/). That grammar file serves as a single source of truth.
+There is a [Simple String Pattern Grammar](./src/ssp.abnf) file, expressed in [ABNF](https://en.wikipedia.org/wiki/Augmented_Backus%E2%80%93Naur_form).
 
 # simple-string-pattern library
 
