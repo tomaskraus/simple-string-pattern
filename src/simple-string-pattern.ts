@@ -3,7 +3,7 @@ import ssp_grammar from '#src/ssp-ts';
 import {escape, unescape} from 'safe-string-literal';
 
 /**
- * encapsulates the SSP (simple string pattern) and provides
+ * Encapsulates the SSP (simple string pattern) and provides
  * methods to create an SSP and test SSP against a string input.
  */
 export default class SimpleStringPattern {
@@ -48,7 +48,7 @@ export default class SimpleStringPattern {
   }
 
   /**
-   *
+   * Gets a pattern string of this object.
    * @returns a simple string pattern
    */
   public value() {
@@ -56,7 +56,7 @@ export default class SimpleStringPattern {
   }
 
   /**
-   *
+   * Tests if this object does match the input string argument.
    * @param input a string to match
    * @returns true if this SPP object match that input. False otherwise.
    */
