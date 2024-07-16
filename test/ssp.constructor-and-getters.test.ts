@@ -145,8 +145,17 @@ describe('Partial Pattern: constructor errors', () => {
     expect(() => new SSP('...  ...')).toThrow();
   });
 
-  test('Does not accept a string which starts and/or ends with space ( ).', () => {
-    ['a ', ' a', ' a ', ' ', 'ab ', ' ab', ' ab ', '  a b '].forEach(s => {
+  test('Does not accept a string its body starts and/or ends with space ( ).', () => {
+    [
+      '... a ',
+      '...  a',
+      '...  a  ...',
+      '...  ',
+      'ab  ...',
+      ' ab ...',
+      ' ab  ...',
+      '...  a b ',
+    ].forEach(s => {
       expect(() => new SSP(s)).toThrow();
     });
   });

@@ -127,8 +127,17 @@ describe('Partial Pattern: constructor errors', () => {
     test('Does not accept an "empty-matching" Middle Pattern without implicit "".', () => {
         expect(() => new simple_string_pattern_1.default('...  ...')).toThrow();
     });
-    test('Does not accept a string which starts and/or ends with space ( ).', () => {
-        ['a ', ' a', ' a ', ' ', 'ab ', ' ab', ' ab ', '  a b '].forEach(s => {
+    test('Does not accept a string its body starts and/or ends with space ( ).', () => {
+        [
+            '... a ',
+            '...  a',
+            '...  a  ...',
+            '...  ',
+            'ab  ...',
+            ' ab ...',
+            ' ab  ...',
+            '...  a b ',
+        ].forEach(s => {
             expect(() => new simple_string_pattern_1.default(s)).toThrow();
         });
     });
