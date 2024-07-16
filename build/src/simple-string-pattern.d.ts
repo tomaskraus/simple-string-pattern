@@ -1,5 +1,5 @@
 /**
- * encapsulates the SSP (simple string pattern) and provides
+ * Encapsulates the SSP (simple string pattern) and provides
  * methods to create an SSP and test SSP against a string input.
  */
 export default class SimpleStringPattern {
@@ -17,12 +17,12 @@ export default class SimpleStringPattern {
      */
     constructor(pattern: string);
     /**
-     *
+     * Gets a pattern string of this object.
      * @returns a simple string pattern
      */
     value(): string;
     /**
-     *
+     * Tests if this object does match the input string argument.
      * @param input a string to match
      * @returns true if this SPP object match that input. False otherwise.
      */
@@ -46,5 +46,8 @@ export default class SimpleStringPattern {
      *
      */
     static parse(input: string): SimpleStringPattern;
+    private static _hasleadingOrTrailingSpaces;
     private static _sanitizeBorderSpace;
+    private static _isEnclosedInDoubleQuotes;
+    private static _encloseInDoubleQuotes;
 }

@@ -121,27 +121,34 @@ export default class SimpleStringPattern {
     if (input.length === 0) {
       return new this('""');
     }
-    const escapedInput = escape(input, '\'"`');
-    let dquotedInput = escapedInput;
-    if (
-      escapedInput.length > 1 &&
-      escapedInput.startsWith('"') &&
-      escapedInput.endsWith('"')
-    ) {
-      dquotedInput = `"${escapedInput}"`;
+    let escapedInput = escape(input, '\'"`');
+    if (this._isEnclosedInDoubleQuotes(escapedInput)) {
+      escapedInput = this._encloseInDoubleQuotes(escapedInput);
     } else {
-      dquotedInput = this._sanitizeBorderSpace(dquotedInput);
+      escapedInput = this._sanitizeBorderSpace(escapedInput);
     }
 
     // console.log(`escaped: (${input}), (${escapedInput})`);
-    return new this(dquotedInput);
+    return new this(escapedInput);
+  }
+
+  private static _hasleadingOrTrailingSpaces(str: string) {
+    return str.startsWith(' ') || str.endsWith(' ');
   }
 
   private static _sanitizeBorderSpace(str: string) {
-    if (str.startsWith(' ') || str.endsWith(' ')) {
-      return `"${str}"`;
+    if (this._hasleadingOrTrailingSpaces(str)) {
+      return this._encloseInDoubleQuotes(str);
     }
     return str;
+  }
+
+  private static _isEnclosedInDoubleQuotes(str: string) {
+    return str.length > 1 && str.startsWith('"') && str.endsWith('"');
+  }
+
+  private static _encloseInDoubleQuotes(str: string) {
+    return `"${str}"`;
   }
 
   static {}

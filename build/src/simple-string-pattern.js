@@ -7,7 +7,7 @@ const nearley_1 = __importDefault(require("nearley"));
 const ssp_ts_1 = __importDefault(require("#src/ssp-ts"));
 const safe_string_literal_1 = require("safe-string-literal");
 /**
- * encapsulates the SSP (simple string pattern) and provides
+ * Encapsulates the SSP (simple string pattern) and provides
  * methods to create an SSP and test SSP against a string input.
  */
 class SimpleStringPattern {
@@ -40,14 +40,14 @@ class SimpleStringPattern {
         }
     }
     /**
-     *
+     * Gets a pattern string of this object.
      * @returns a simple string pattern
      */
     value() {
         return this.pattern;
     }
     /**
-     *
+     * Tests if this object does match the input string argument.
      * @param input a string to match
      * @returns true if this SPP object match that input. False otherwise.
      */
@@ -103,24 +103,30 @@ class SimpleStringPattern {
         if (input.length === 0) {
             return new this('""');
         }
-        const escapedInput = (0, safe_string_literal_1.escape)(input, '\'"`');
-        let dquotedInput = escapedInput;
-        if (escapedInput.length > 1 &&
-            escapedInput.startsWith('"') &&
-            escapedInput.endsWith('"')) {
-            dquotedInput = `"${escapedInput}"`;
+        let escapedInput = (0, safe_string_literal_1.escape)(input, '\'"`');
+        if (this._isEnclosedInDoubleQuotes(escapedInput)) {
+            escapedInput = this._encloseInDoubleQuotes(escapedInput);
         }
         else {
-            dquotedInput = this._sanitizeBorderSpace(dquotedInput);
+            escapedInput = this._sanitizeBorderSpace(escapedInput);
         }
         // console.log(`escaped: (${input}), (${escapedInput})`);
-        return new this(dquotedInput);
+        return new this(escapedInput);
+    }
+    static _hasleadingOrTrailingSpaces(str) {
+        return str.startsWith(' ') || str.endsWith(' ');
     }
     static _sanitizeBorderSpace(str) {
-        if (str.startsWith(' ') || str.endsWith(' ')) {
-            return `"${str}"`;
+        if (this._hasleadingOrTrailingSpaces(str)) {
+            return this._encloseInDoubleQuotes(str);
         }
         return str;
+    }
+    static _isEnclosedInDoubleQuotes(str) {
+        return str.length > 1 && str.startsWith('"') && str.endsWith('"');
+    }
+    static _encloseInDoubleQuotes(str) {
+        return `"${str}"`;
     }
 }
 exports.default = SimpleStringPattern;
