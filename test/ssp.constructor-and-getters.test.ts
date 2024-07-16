@@ -159,10 +159,15 @@ describe('Partial Pattern: constructor errors', () => {
   });
 
   test('Does not accept a string containing those escape sequences that are not allowed.', () => {
-    expect(() => new SSP('... \\ ...')).toThrow();
     expect(() => new SSP('... \\a')).toThrow();
     expect(() => new SSP('\\a ...')).toThrow();
     expect(() => new SSP('... \\a ...')).toThrow();
+  });
+
+  test('Does not accept a string its pattern body ends with odd number of consecutive backslash characters.', () => {
+    expect(() => new SSP('... \\ ...')).toThrow();
+    expect(() => new SSP('... \\\\\\ ...')).toThrow();
+    expect(() => new SSP('... a\\\\\\ ...')).toThrow();
   });
 });
 

@@ -10,7 +10,7 @@ export default class SimpleStringPattern {
     private readonly pattern;
     private readonly _body;
     private readonly _type;
-    private parser;
+    private static readonly ALLOWED_ESCAPES;
     /**
      * Creates a new SSP object.
      * @param pattern A string in SSP notation.
@@ -46,8 +46,11 @@ export default class SimpleStringPattern {
      *
      */
     static parse(input: string): SimpleStringPattern;
-    private static _hasleadingOrTrailingSpaces;
+    private static _hasLeadingOrTrailingSpaces;
     private static _sanitizeBorderSpace;
     private static _isEnclosedInDoubleQuotes;
     private static _encloseInDoubleQuotes;
+    private static _checkForUnwantedChars;
+    private static _checkForUnwantedEscapes;
+    private static _checkForUnclosedEscapes;
 }

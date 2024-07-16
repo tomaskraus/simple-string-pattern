@@ -139,10 +139,14 @@ describe('Partial Pattern: constructor errors', () => {
         expect(() => new simple_string_pattern_1.default(unescapedMultilineStr + ' ...')).toThrow();
     });
     test('Does not accept a string containing those escape sequences that are not allowed.', () => {
-        expect(() => new simple_string_pattern_1.default('... \\ ...')).toThrow();
         expect(() => new simple_string_pattern_1.default('... \\a')).toThrow();
         expect(() => new simple_string_pattern_1.default('\\a ...')).toThrow();
         expect(() => new simple_string_pattern_1.default('... \\a ...')).toThrow();
+    });
+    test('Does not accept a string its pattern body ends with odd number of consecutive backslash characters.', () => {
+        expect(() => new simple_string_pattern_1.default('... \\ ...')).toThrow();
+        expect(() => new simple_string_pattern_1.default('... \\\\\\ ...')).toThrow();
+        expect(() => new simple_string_pattern_1.default('... a\\\\\\ ...')).toThrow();
     });
 });
 // ----------------------------------------------------------------------------

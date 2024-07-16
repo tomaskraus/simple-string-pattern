@@ -1,5 +1,3 @@
-import nearley from 'nearley';
-import ssp_grammar from '#src/ssp-ts';
 import {escape, unescape} from 'safe-string-literal';
 
 /**
@@ -16,35 +14,49 @@ export default class SimpleStringPattern {
   private readonly _body: string;
   private readonly _type: number;
 
-  private parser: nearley.Parser;
+  private static readonly ALLOWED_ESCAPES = '\\trnfb"\'';
 
   /**
    * Creates a new SSP object.
    * @param pattern A string in SSP notation.
    */
   constructor(pattern: string) {
-    this.parser = new nearley.Parser(nearley.Grammar.fromCompiled(ssp_grammar));
-    this.parser.feed(pattern);
-    if (this.parser.results.length === 0) {
-      throw new Error(`Parser: pattern not recognized: (${pattern})`);
+    const prohibitedSpaceMsg = (
+      pattStr: string
+    ) => `Pattern [${pattStr}]: No leading or trailing space allowed in a pattern. 
+    If you want to keep those spaces, enclose the pattern body in double quotes (").`;
+    if (SimpleStringPattern._hasLeadingOrTrailingSpaces(pattern)) {
+      throw new Error(prohibitedSpaceMsg(pattern));
     }
-    const res = this.parser.results[0];
-    // console.log('ssp parsed', res);
-    this.pattern = res.value;
-    this._body = unescape(res.body);
-    switch (res.type) {
-      case 'S':
-        this._type = SimpleStringPattern.TYPE_START;
-        break;
-      case 'E':
-        this._type = SimpleStringPattern.TYPE_END;
-        break;
-      case 'M':
-        this._type = SimpleStringPattern.TYPE_MIDDLE;
-        break;
-      default:
-        this._type = SimpleStringPattern.TYPE_FULL;
+    this.pattern = pattern;
+    this._body = this.pattern;
+    this._type = SimpleStringPattern.TYPE_FULL;
+    if (pattern.startsWith('... ') && pattern.endsWith(' ...')) {
+      this._type = SimpleStringPattern.TYPE_MIDDLE;
+      this._body = pattern.slice(4, -4);
+    } else if (pattern.endsWith(' ...')) {
+      this._type = SimpleStringPattern.TYPE_START;
+      this._body = pattern.slice(0, -4);
+    } else if (pattern.startsWith('... ')) {
+      this._type = SimpleStringPattern.TYPE_END;
+      this._body = pattern.slice(4);
     }
+
+    if (this._body.length === 0) {
+      throw new Error(
+        `Pattern [${pattern}]: Empty pattern body is not allowed. Use ("") in pattern body to express an empty pattern.`
+      );
+    }
+    if (SimpleStringPattern._hasLeadingOrTrailingSpaces(this._body)) {
+      throw new Error(prohibitedSpaceMsg(pattern));
+    }
+    SimpleStringPattern._checkForUnwantedChars(this._body);
+    SimpleStringPattern._checkForUnwantedEscapes(this._body);
+    SimpleStringPattern._checkForUnclosedEscapes(this._body);
+    if (SimpleStringPattern._isEnclosedInDoubleQuotes(this._body)) {
+      this._body = this._body.slice(1, -1);
+    }
+    this._body = unescape(this._body);
   }
 
   /**
@@ -132,12 +144,12 @@ export default class SimpleStringPattern {
     return new this(escapedInput);
   }
 
-  private static _hasleadingOrTrailingSpaces(str: string) {
+  private static _hasLeadingOrTrailingSpaces(str: string) {
     return str.startsWith(' ') || str.endsWith(' ');
   }
 
   private static _sanitizeBorderSpace(str: string) {
-    if (this._hasleadingOrTrailingSpaces(str)) {
+    if (this._hasLeadingOrTrailingSpaces(str)) {
       return this._encloseInDoubleQuotes(str);
     }
     return str;
@@ -149,6 +161,47 @@ export default class SimpleStringPattern {
 
   private static _encloseInDoubleQuotes(str: string) {
     return `"${str}"`;
+  }
+
+  private static _checkForUnwantedChars(str: string) {
+    str.split('').forEach((ch, i) => {
+      // ASCII nonprintables
+      if (ch.charCodeAt(0) < 31) {
+        throw new Error(
+          `String [${str}]: contains prohibited character with code [${ch.charCodeAt(0)}] at position [${i}]`
+        );
+      }
+    });
+  }
+
+  private static _checkForUnwantedEscapes(str: string) {
+    let escapeMode = false;
+    str.split('').forEach((ch, i) => {
+      if (escapeMode) {
+        if (escapeMode && this.ALLOWED_ESCAPES.indexOf(ch) < 0) {
+          throw new Error(
+            `String [${str}]: contains prohibited escape sequence [\\${ch}] at position [${i}]`
+          );
+        }
+        escapeMode = false;
+      } else if (ch === '\\') {
+        escapeMode = true;
+      }
+    });
+  }
+
+  private static _checkForUnclosedEscapes(str: string) {
+    let escapeCount = 0;
+    for (let i = str.length - 1; i >= 0; i--) {
+      if (str.charAt(i) === '\\') {
+        escapeCount++;
+      } else {
+        break;
+      }
+    }
+    if (escapeCount % 2 !== 0) {
+      throw new Error(`String [${str}]: has unclosed escapes.`);
+    }
   }
 
   static {}
