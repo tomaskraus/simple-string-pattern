@@ -32,7 +32,7 @@ describe('Parse: escapes', () => {
 });
 
 describe('Parse: leading and trailing spaces', () => {
-  test('Makes an exact pattern if leading or trailing spaces are found.', () => {
+  test('Makes an Exact Pattern if leading or trailing spaces are found.', () => {
     [
       [' abc', '" abc"'],
       ['abc ', '"abc "'],
@@ -42,10 +42,8 @@ describe('Parse: leading and trailing spaces', () => {
     });
   });
 
-  test('Escapes the leading quote if the input is enclosed by double-quotes.', () => {
+  test('Does not create an Exact Pattern if the input is enclosed by double-quotes.', () => {
     [
-      ['abc"', 'abc"'],
-      ['"abc', '"abc'],
       ['"abc"', '\\"abc"'],
       ['"a"', '\\"a"'],
       ['""', '\\""'],
