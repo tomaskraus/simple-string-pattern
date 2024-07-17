@@ -111,7 +111,7 @@ class SimpleStringPattern {
         }
         let escapedInput = (0, safe_string_literal_1.escape)(input, '\'"`');
         if (this._isEnclosedInDoubleQuotes(escapedInput)) {
-            escapedInput = this._encloseInDoubleQuotes(escapedInput);
+            escapedInput = '\\' + escapedInput; // escape the special meaning
         }
         else {
             escapedInput = this._sanitizeBorderSpace(escapedInput);

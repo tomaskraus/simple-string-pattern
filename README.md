@@ -122,13 +122,9 @@ Because of special meaning of double quotes surrouding the pattern body:
 - `"abc"`: Does match the string '`abc`' only.
 - `"... abc ..."`: Does match the string '`... abc ...`'.
 
-Should we need to match a string surrounded by double quotes, double them in the SSP:
+Should we need to match a string surrounded by double quotes, just escape the leading double quote:
 
-- `""abc""`: Does match the string '`"abc"`' only.
-
-or escape those double quotes at the beginning and the end of a pattern:
-
-- `\"abc\"`: Does match the string '`"abc"`' only.
+- `\"abc"`: Does match the string '`"abc"`' only.
 
 If a pattern body is not completely surrounded by double quotes, that outermost double-quote character is treated as a normal one - i.e. is a part of a search:
 

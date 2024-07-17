@@ -135,7 +135,7 @@ export default class SimpleStringPattern {
     }
     let escapedInput = escape(input, '\'"`');
     if (this._isEnclosedInDoubleQuotes(escapedInput)) {
-      escapedInput = this._encloseInDoubleQuotes(escapedInput);
+      escapedInput = '\\' + escapedInput; // escape the special meaning
     } else {
       escapedInput = this._sanitizeBorderSpace(escapedInput);
     }

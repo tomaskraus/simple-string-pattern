@@ -42,13 +42,13 @@ describe('Parse: leading and trailing spaces', () => {
     });
   });
 
-  test('Makes an exact pattern if enclosing double-quotes are found.', () => {
+  test('Escapes the leading quote if the input is enclosed by double-quotes.', () => {
     [
       ['abc"', 'abc"'],
       ['"abc', '"abc'],
-      ['"abc"', '""abc""'],
-      ['"a"', '""a""'],
-      ['""', '""""'],
+      ['"abc"', '\\"abc"'],
+      ['"a"', '\\"a"'],
+      ['""', '\\""'],
     ].forEach(([input, expectedValue]) => {
       expect(SSP.parse(input).value()).toEqual(expectedValue);
     });
