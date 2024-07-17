@@ -1,5 +1,11 @@
 import SSP from '#src/simple-string-pattern';
 
+describe('Parse: errors', () => {
+  test('Throws an Error if input contains forbidden characters.', () => {
+    expect(() => SSP.parse(String.fromCharCode(0))).toThrow();
+  });
+});
+
 describe('Parse: simple', () => {
   test('Parses an empty string', () => {
     expect(SSP.parse('').value()).toEqual('""');

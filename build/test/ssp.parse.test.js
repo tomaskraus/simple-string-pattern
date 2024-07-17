@@ -4,6 +4,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const simple_string_pattern_1 = __importDefault(require("#src/simple-string-pattern"));
+describe('Parse: errors', () => {
+    test('Throws an Error if input contains forbidden characters.', () => {
+        expect(() => simple_string_pattern_1.default.parse(String.fromCharCode(0))).toThrow();
+    });
+});
 describe('Parse: simple', () => {
     test('Parses an empty string', () => {
         expect(simple_string_pattern_1.default.parse('').value()).toEqual('""');
