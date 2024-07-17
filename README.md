@@ -48,12 +48,12 @@ From the very beginning, **SSP** format aims to be well defined, hence it has it
 ## SSP Examples
 
 - `abc`: Does match the string '`abc`' only.
-- `" abc"`: Does match the string '` abc`' only. Double quotes ensure that leading and trailing spaces matter in the matching process. Those outermost double quotes are not part of the search.
-- `\" abc"`: Does match the string '`" abc"`' only.
+- `" abc"`: Does match the string '` abc`' only. Double quotes ensure that leading and trailing spaces matter in the matching process. Those outermost double quotes are not part of the matching.
+- `\" abc"`: Does match the string '`" abc"`' including those double quotes. The leading backslash (`\`) character cancels the special meaning of the outermost double quotes.
 - `abc ...`: Does match any string that starts with '`abc`'.
 - `... abc`: Does match any string that ends with '`abc`'.
 - `... abc ...`: Does match any string that contains at least one '`abc`'.
-- `... " a"b"c" ...`: Does match any string that contains at least one '` a"b"c`'.
+- `... " = " ...`: Does match any string that contains at least one (`=`) character having at least one space before and after.
 - `... \n ...`: Does match any string that contains at least one _newline_ character.
 - `... \\ ...`: Does match any string that contains at least one backslash character (`\`). Note that the _backslash_ character is also escaped.
 
@@ -134,13 +134,10 @@ If a pattern body is not completely surrounded by double quotes, that outermost 
 ## Some special SSPs:
 
 - `""` the full empty pattern, does match the empty input only
-- `.` the full pattern that does match one dot only
-- `"` the full pattern that does match one double-quote character only
 - `"" ...` the start empty pattern (does match everything)
 - `... ""` the end empty pattern (does match everything)
 - `... "" ...` the middle empty pattern (does match everything)
-- `"..."` the full pattern that does match three dots only
-- `..."..."...` the middle pattern that does match any string containing three consecutive dots
+
 
 ## Invalid SSP Examples:
 
@@ -156,8 +153,6 @@ The string:
     "World"
 
 is not a valid SSP, as it contains an unescaped newline character.
-
-The string <code>...</code> is not a valid SSP, as it would be handled as an SSP with partial mark, with an empty pattern body (plus, that mark is not space separated), which is not allowed.
 
 > Tips to fix an invalid SSP:
 >
