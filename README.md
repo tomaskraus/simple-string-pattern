@@ -304,6 +304,15 @@ console.log(patternShortened.test(squares.toString()));
 //=> true
 ```
 
+_limitPatternLen()_ method throws an _Error_ if its object's pattern type is not _Full Pattern_ or _Start Pattern_:
+
+```js
+const patt = new SSP("... That's end.");
+const patt2 = patt.limitPatternLen(4);  // throws Error
+```
+
+For more about pattern types, see the [SSP Types](#ssp-types) chapter.
+
 ### On SSP objects equality
 
 Two SSP objects are considered equal if they do match the same inputs.  
