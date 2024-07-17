@@ -229,6 +229,7 @@ const s = `Hello
  world!`;
 
 const patt = SSP.parse(s);
+// patt points to an SSP object instance
 ```
 
 From the above example, the _patt_ object holds this pattern: `Hello\n world!`
@@ -237,27 +238,30 @@ Unlike SSP constructor, the _parse()_ method can create an empty SSP object from
 
 ```js
 const patt = SSP.parse('');
-
-console.log(patt.value());
-//=> ""
+// patt does match an empty input
 ```
 
-> _SSP.parse()_ method throws an _Error_ if a valid SSP cannot be created from its argument.
+_SSP.parse()_ method throws an _Error_ if a valid SSP cannot be created from its argument:
 
-_SSP.parse()_ always returns a _Full Pattern_.
+```js
+SSP.parse(String.fromCharCode(0));
+// throws an Error
+```
+
+> _Note_: _SSP.parse()_ always returns a _Full Pattern_ SSP object.
 
 ### value() method
 
 To get a string representation of the pattern, use the _value()_ method of the SSP object:
 
 ```js
-const s = `...Hello
- world!`;
+const patt = SSP.parse('hello');
+console.log(patt.value());
+//=> hello
 
-const patt = SSP.parse(s);
-
-console.log(SSP.value());
-//=> "... Hello\n world!"
+const patt2 = SSP.parse('ab\nc');
+console.log(patt2.value());
+//=> ab\\nc
 ```
 
 ### test() method
