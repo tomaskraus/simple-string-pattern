@@ -5,7 +5,7 @@ A **simple-string-pattern** is also a name of the library to dealing with _Simpl
 
 Unlike [Regular Expressions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions), _Simple String Pattern_ intentionally has only a few features, to be very easy to read and understand.
 
-The motivation to create such a thing as the SSP was the need for writing a [Doctest](https://docs.python.org/3/library/doctest.html)-like testing tool, where user can write string output assertions right into code comments, in a convenient way:
+The motivation to create such a thing as the SSP was the need for a simple pattern format in [Clogtest testing tool](https://github.com/tomaskraus/clogtest), which runs a piece of code and tests the code output against  specially commented assertions:
 
 ```js
 // We expect the output to be 2
