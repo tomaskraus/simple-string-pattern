@@ -111,7 +111,7 @@ class SimpleStringPattern {
         }
         let escapedInput = (0, safe_string_literal_1.escape)(input, '\'"`');
         if (this._isEnclosedInDoubleQuotes(escapedInput)) {
-            escapedInput = '\\' + escapedInput; // escape the special meaning
+            escapedInput = this._escapePatternSpecialMeaning(escapedInput); // escape the special meaning
         }
         else {
             escapedInput = this._sanitizeBorderSpace(escapedInput);
@@ -172,6 +172,9 @@ class SimpleStringPattern {
         if (escapeCount % 2 !== 0) {
             throw new Error(`String [${str}]: has unclosed escapes.`);
         }
+    }
+    static _escapePatternSpecialMeaning(str) {
+        return `\\${str}`;
     }
 }
 exports.default = SimpleStringPattern;

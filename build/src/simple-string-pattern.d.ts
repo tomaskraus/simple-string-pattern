@@ -53,4 +53,5 @@ export default class SimpleStringPattern {
     private static _checkForUnwantedChars;
     private static _checkForUnwantedEscapes;
     private static _checkForUnclosedEscapes;
+    private static _escapePatternSpecialMeaning;
 }
