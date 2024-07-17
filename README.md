@@ -133,6 +133,7 @@ or escape those double quotes at the beginning and the end of a pattern:
 If a pattern body is not completely surrounded by double quotes, that outermost double-quote character is treated as a normal one - i.e. is a part of a search:
 
 - `abc"`: Does match the string '`abc"`' only.
+- `"abc`: Does match the string '`"abc`' only.
 
 ## Some special SSPs:
 
@@ -308,7 +309,7 @@ _limitPatternLen()_ method throws an _Error_ if its object's pattern type is not
 
 ```js
 const patt = new SSP("... That's end.");
-const patt2 = patt.limitPatternLen(4);  // throws Error
+const patt2 = patt.limitPatternLen(4); // throws Error
 ```
 
 For more about pattern types, see the [SSP Types](#ssp-types) chapter.
