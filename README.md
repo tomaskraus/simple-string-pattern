@@ -49,7 +49,7 @@ From the very beginning, **SSP** format aims to be well defined, hence it has it
 
 - `abc`: Does match the string '`abc`' only.
 - `" abc"`: Does match the string '` abc`' only. Double quotes ensure that leading and trailing spaces matter in the matching process. Those outermost double quotes are not part of the search.
-- `"" abc""`: Does match the string '`" abc"`' only.
+- `\" abc"`: Does match the string '`" abc"`' only.
 - `abc ...`: Does match any string that starts with '`abc`'.
 - `... abc`: Does match any string that ends with '`abc`'.
 - `... abc ...`: Does match any string that contains at least one '`abc`'.
