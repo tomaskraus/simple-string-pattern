@@ -94,6 +94,10 @@ describe('Full Pattern: constructor and getters - multiple characters', () => {
             expect(patt.value()).toEqual(s);
         });
     });
+    test('If the leading double-quote is escaped, does not create an Exact Pattern.', () => {
+        expect(new simple_string_pattern_1.default('"hello"').value()).toEqual('"hello"');
+        expect(new simple_string_pattern_1.default('\\"hello"').value()).toEqual('\\"hello"');
+    });
 });
 describe('Full Pattern: constructor and getters - escape sequences', () => {
     test('Does allow escaped common control ASCII character.', () => {
@@ -240,5 +244,9 @@ describe('Full Pattern: constructor and getters - escape sequences', () => {
         ].forEach(s => {
             expect(new simple_string_pattern_1.default(s).value()).toEqual(s);
         });
+    });
+    test("If the pattern body's leading double-quote is escaped, does not create an Exact Partial Pattern.", () => {
+        expect(new simple_string_pattern_1.default('... " hello"').value()).toEqual('... " hello"');
+        expect(new simple_string_pattern_1.default('... \\"hello"').value()).toEqual('... \\"hello"');
     });
 });

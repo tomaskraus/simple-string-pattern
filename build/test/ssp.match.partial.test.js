@@ -51,6 +51,20 @@ describe('Partial Pattern: match', () => {
             });
         });
     });
+    test('If pattern body value has its leading double quote escaped, does not act as an Exact Pattern.', () => {
+        const patt = new simple_string_pattern_1.default('... \\" hello"');
+        expect(patt.test('a" hello"')).toBeTruthy();
+        expect(patt.test('a hello')).toBeFalsy();
+        const patt2 = new simple_string_pattern_1.default('... " hello"');
+        expect(patt2.test('a hello')).toBeTruthy();
+        expect(patt2.test('a" hello"')).toBeFalsy();
+        const patt3 = new simple_string_pattern_1.default('\\" hello" ...');
+        expect(patt3.test('" hello"A')).toBeTruthy();
+        expect(patt3.test(' helloA')).toBeFalsy();
+        const patt4 = new simple_string_pattern_1.default('" hello" ...');
+        expect(patt4.test(' helloA')).toBeTruthy();
+        expect(patt4.test('" hello"A')).toBeFalsy();
+    });
 });
 describe('Partial Pattern: match empty string:', () => {
     test('A "" Partial empty Pattern does match any input.', () => {
