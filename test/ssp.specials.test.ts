@@ -6,6 +6,7 @@ describe('Pattern: specials', () => {
     [
       '""',
       '"a"',
+      '\\"a"',
       '""a""',
       'Hello',
       "That's a 😀! きáéÜΔ",

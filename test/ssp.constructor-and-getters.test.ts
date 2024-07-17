@@ -105,6 +105,11 @@ describe('Full Pattern: constructor and getters - multiple characters', () => {
       expect(patt.value()).toEqual(s);
     });
   });
+
+  test('If the leading double-quote is escaped, does not create an Exact Pattern.', () => {
+    expect(new SSP('"hello"').value()).toEqual('"hello"');
+    expect(new SSP('\\"hello"').value()).toEqual('\\"hello"');
+  });
 });
 
 describe('Full Pattern: constructor and getters - escape sequences', () => {
@@ -274,5 +279,10 @@ describe('Full Pattern: constructor and getters - escape sequences', () => {
     ].forEach(s => {
       expect(new SSP(s).value()).toEqual(s);
     });
+  });
+
+  test("If the pattern body's leading double-quote is escaped, does not create an Exact Partial Pattern.", () => {
+    expect(new SSP('... " hello"').value()).toEqual('... " hello"');
+    expect(new SSP('... \\"hello"').value()).toEqual('... \\"hello"');
   });
 });
