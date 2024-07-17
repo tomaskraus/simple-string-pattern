@@ -139,6 +139,9 @@ export default class SimpleStringPattern {
     } else {
       escapedInput = this._sanitizeBorderSpace(escapedInput);
     }
+    if (escapedInput.startsWith('... ') || escapedInput.endsWith(' ...')) {
+      escapedInput = this._encloseInDoubleQuotes(escapedInput);
+    }
 
     // console.log(`escaped: (${input}), (${escapedInput})`);
     return new this(escapedInput);

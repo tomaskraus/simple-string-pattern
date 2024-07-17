@@ -46,7 +46,23 @@ describe('Parse: leading and trailing spaces', () => {
             ['abc"', 'abc"'],
             ['"abc', '"abc'],
             ['"abc"', '""abc""'],
-            [' abc"', '" abc""'],
+            ['"a"', '""a""'],
+            ['""', '""""'],
+        ].forEach(([input, expectedValue]) => {
+            expect(simple_string_pattern_1.default.parse(input).value()).toEqual(expectedValue);
+        });
+    });
+});
+describe('Parse(): Partial-Pattern-like inputs', () => {
+    test('Always returns a Full Pattern.', () => {
+        [
+            ['abc ...', '"abc ..."'],
+            ['abc" ...', '"abc" ..."'],
+            ['... abc', '"... abc"'],
+            ['... abc ...', '"... abc ..."'],
+            ['... ', '"... "'],
+            [' ...', '" ..."'],
+            ['...  ...', '"...  ..."'],
         ].forEach(([input, expectedValue]) => {
             expect(simple_string_pattern_1.default.parse(input).value()).toEqual(expectedValue);
         });
