@@ -12,7 +12,7 @@ end-pattern             = partial-mark sp pattern-body
 middle-pattern          = partial-mark sp pattern-body sp partial-mark
 pattern-body            = exact-body / trimmed-body
 exact-body              = dquote *ichar dquote
-trimmed-body            = char /        ; a body without leading and trailing spaces
+trimmed-body            = char /        ; a body without leading or trailing spaces
                           char *ichar char
 partial-mark    = %x2E.2E.2E    ; three dots
 sp              = %x20          ; space
