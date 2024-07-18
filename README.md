@@ -5,7 +5,7 @@ A **simple-string-pattern** is also a name of the library to dealing with _Simpl
 
 Unlike [Regular Expressions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions), _Simple String Pattern_ intentionally has only a few features, to be very easy to read and understand.
 
-The motivation to create such a thing as the SSP was the need for a simple pattern format in [Clogtest testing tool](https://github.com/tomaskraus/clogtest), which runs a piece of code and tests the code output against  specially commented assertions:
+The motivation to create such a thing as the SSP was the need for a simple pattern format in [Clogtest testing tool](https://github.com/tomaskraus/clogtest), which runs a piece of code and tests the code output against specially commented assertions:
 
 ```js
 // We expect the output to be 2
@@ -64,7 +64,11 @@ From the very beginning, **SSP** format aims to be well defined, hence it has it
 In this document, SSP examples are written in the way they appear in the console or a file.  
 Should you use SSPs as a string literal in javascript, just **double** those backslashes in that literal.
 
-Example: `Hello \n \\backslashes\\!` SSP written in a file becomes a <code>'Hello&nbsp;\\\\n&nbsp;\\\\\\\\backslashes\\\\\\\\!'</code> SSP string literal.
+Example: `Hello \n \\backslashes\\!` SSP expression will appear as <code>'Hello&nbsp;\\\\n&nbsp;\\\\\\\\backslashes\\\\\\\\!'</code> string literal in a javascript file. It will match this input:
+
+>
+><code>Hello&nbsp; </code>  
+><code>&nbsp;\backslashes\!</code>
 
 ## Pattern Definition
 
@@ -137,7 +141,6 @@ If a pattern body is not completely surrounded by double quotes, that outermost 
 - `"" ...` the start empty pattern (does match everything)
 - `... ""` the end empty pattern (does match everything)
 - `... "" ...` the middle empty pattern (does match everything)
-
 
 ## Invalid SSP Examples:
 
