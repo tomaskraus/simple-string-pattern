@@ -41,7 +41,7 @@ In the code example above, there are SSPs within those `//=>` comments.
 
 As you can see, the SSP really is a string that may contain spaces and some escaped characters, optionally double-quoted, possibly surrounded by three dots ("...") on either side.
 
-#### Solid Background
+#### Solid Foundation
 
 From the very beginning, **SSP** format aims to be well defined, hence it has its own [SSP Grammar](#ssp-grammar).
 
@@ -66,9 +66,8 @@ Should you use SSPs as a string literal in javascript, just **double** those bac
 
 Example: `Hello \n \\backslashes\\!` SSP expression will appear as <code>'Hello&nbsp;\\\\n&nbsp;\\\\\\\\backslashes\\\\\\\\!'</code> string literal in a javascript file. It will match this input:
 
->
-><code>Hello&nbsp; </code>  
-><code>&nbsp;\backslashes\!</code>
+> <code>Hello&nbsp; </code>  
+> <code>&nbsp;\backslashes\!</code>
 
 ## Pattern Definition
 
