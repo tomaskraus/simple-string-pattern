@@ -76,7 +76,7 @@ _Simple String Pattern_ (a.k.a. SSP) is a **trimmed** string with some **escape 
 SSP consist of _Pattern Body_ (i.e. exact string to match), which can be surrounded by a _*Partial Mark*_ (`...`) on either side, to match the beginning, the end or the inside of the possible _input_.  
 There must be exactly one space between a _Partial Mark_ and _Pattern Body_.
 
-> **Note**: Only the _Pattern Body_ is matched against the input in the matching process. Partial Marks only tells how to do the match.
+> **Note**: Only the _Pattern Body_ is matched against the input in the matching process. Partial Marks only tell how to do the match.
 
 A simplified SSP structure (in an [ABNF](https://en.wikipedia.org/wiki/Augmented_Backus%E2%80%93Naur_form)):
 
