@@ -41,7 +41,9 @@ describe('Parse: leading and trailing spaces', () => {
             expect(simple_string_pattern_1.default.parse(input).value()).toEqual(expectedValue);
         });
     });
-    test('Does not create an Exact Pattern if the input is enclosed by double-quotes.', () => {
+});
+describe('Parse(): enclosing double-quotes', () => {
+    test('Treats enclosing double-quotes literally (without ExactPattern special meaning).', () => {
         [
             ['"abc"', '\\"abc"'],
             ['"a"', '\\"a"'],
@@ -50,9 +52,12 @@ describe('Parse: leading and trailing spaces', () => {
             expect(simple_string_pattern_1.default.parse(input).value()).toEqual(expectedValue);
         });
     });
+    test('Treats escaped leading double quote literally (simply leaves that backslash here).', () => {
+        expect(simple_string_pattern_1.default.parse('\\"abc"').value()).toEqual('\\\\"abc"');
+    });
 });
 describe('Parse(): Partial-Pattern-like inputs', () => {
-    test('Always returns a Full Pattern.', () => {
+    test('Treats partial marks (...) literally (without PartialPattern special meaning).', () => {
         [
             ['abc ...', '"abc ..."'],
             ['abc" ...', '"abc" ..."'],

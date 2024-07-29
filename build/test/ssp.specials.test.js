@@ -24,6 +24,7 @@ describe('Pattern: specials', () => {
             '\\" (\\\', \\") \\"',
             '\\\\ escaped backslash: \\\\.',
             'A literal form of newline escape sequence: \\\\n.',
+            '\\" abc"',
         ].forEach(pattStr => {
             [test_utils_1.default.id, test_utils_1.default.toStartPatt, test_utils_1.default.toEndPatt, test_utils_1.default.toMiddlePatt].forEach(pattModfn => {
                 const patt = new simple_string_pattern_1.default(pattModfn(pattStr));
@@ -57,6 +58,7 @@ describe('Pattern: specials', () => {
             '... ',
             ' ...',
             '...  ...',
+            '\\" abc"',
         ].forEach(pattStrBase => {
             [test_utils_1.default.id, test_utils_1.default.toStartPatt, test_utils_1.default.toEndPatt, test_utils_1.default.toMiddlePatt].forEach(pattModfn => {
                 const pattStr = pattModfn(pattStrBase);
@@ -65,5 +67,10 @@ describe('Pattern: specials', () => {
                 expect(patt.test(pattStr)).toBeTruthy();
             });
         });
+    });
+    test('Accepts common characters', () => {
+        const common_chars = '`~!@#$%^&*()_-+=()[]{}:;"\'|<>,.?/\\';
+        const patt = simple_string_pattern_1.default.parse(common_chars);
+        expect(patt.test(common_chars)).toBeTruthy();
     });
 });

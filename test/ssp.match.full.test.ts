@@ -89,8 +89,10 @@ describe('Full Pattern: match', () => {
   test('If pattern value has its leading double quote escaped, does not act as an Exact Pattern.', () => {
     const patt = new SSP('\\" hello"');
     expect(patt.test('" hello"')).toBeTruthy();
+    expect(patt.test(' hello')).toBeFalsy();
 
     const patt2 = new SSP('" hello"');
     expect(patt2.test(' hello')).toBeTruthy();
+    expect(patt2.test('" hello"')).toBeFalsy();
   });
 });
