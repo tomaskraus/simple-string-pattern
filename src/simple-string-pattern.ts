@@ -19,6 +19,16 @@ export default class SimpleStringPattern {
   /**
    * Creates a new SSP object.
    * @param pattern A string in SSP notation.
+   *
+   * @example
+   * ```js
+   * const patt = new SSP('Err ...');
+   * console.log(patt.test('Error: file not found!'))
+   * //=> true
+   *
+   * console.log(patt.test('Er'));
+   * //=> false
+   * ```
    */
   constructor(pattern: string) {
     const prohibitedSpaceMsg = (
@@ -123,8 +133,8 @@ export default class SimpleStringPattern {
   }
 
   /**
-   *
-   * @param input Tries to create an SSP object from the input. That SSP does match that input.
+   * Tries to create an SSP object from the input. That SSP does match that input.
+   * @param input Some text. The newly created SSP object will match that text.
    * @returns A new SSP object. Its value is always of a Full Pattern type.
    * @throws Error if cannot create a valid SSP object from the input.
    *
