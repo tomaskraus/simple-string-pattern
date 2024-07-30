@@ -202,10 +202,6 @@ const SSP = require('simple-string-pattern').default;
 
 ### Create a Pattern
 
-There are two different ways to create an SSP:
-
-#### 1. constructor
-
 SSP constructor expect a string in an SSP format as a parameter:
 
 ```js
@@ -216,48 +212,18 @@ From the above example, the _patt_ object holds this pattern: `Hello,\n "World"!
 
 > SSP constructor throws an _Error_ if its argument is not a valid SSP string.
 
-#### 2. parse() method
-
-_parse()_ static method creates an SSP instance from an input string "as is", escaping newlines and other line breaks:
-
-```js
-const s = `Hello
- world!`;
-
-const patt = SSP.parse(s);
-// patt points to an SSP object instance
-```
-
-From the above example, the _patt_ object holds this pattern: `Hello\n world!`
-
-Unlike SSP constructor, the _parse()_ method can create an empty SSP object from an empty input:
-
-```js
-const patt = SSP.parse('');
-// patt does match an empty input
-```
-
-_SSP.parse()_ method throws an _Error_ if a valid SSP cannot be created from its argument:
-
-```js
-SSP.parse(String.fromCharCode(0));
-// throws an Error
-```
-
-> _Note_: _SSP.parse()_ always returns a _Full Pattern_ SSP object.
-
 ### value() method
 
 To get a string representation of the pattern, use the _value()_ method of the SSP object:
 
 ```js
-const patt = SSP.parse('hello');
+const patt = new SSP('hello');
 console.log(patt.value());
 //=> hello
 
-const patt2 = SSP.parse('ab\nc');
+const patt2 = new SSP('"abc"');
 console.log(patt2.value());
-//=> ab\\nc
+//=> \\"abc"
 ```
 
 ### test() method
@@ -274,6 +240,54 @@ console.log(patt.test('lazy'));
 console.log(patt.test('See?\nWhat a l-a-z-y fox!'));
 //=> false
 ```
+
+### parse() method
+
+_parse()_ static method creates an SSP instance from an input string "as is", escaping newlines and other line breaks:
+
+```js
+const s = `Hello
+ world!`;
+
+const patt = SSP.parse(s);
+// patt points to an SSP object instance
+```
+
+From the above example, the _patt_ object holds this pattern: `Hello\n world!`
+
+_Parse()_ method creates such an SSP object that does match the input argument of _Parse()_ method itself:
+
+```js
+// creates an SSP pattern literally
+const patt = SSP.parse('... abc ...');
+console.log(patt.value());
+//=> "... abc ..."
+console.log(patt.test('... abc ...'));
+//=> true
+console.log(patt.test('abc'));
+//=> false
+```
+
+Unlike the SSP constructor, _parse()_ method treats its argument as a text a newly created SSP object will match, instead of a textual representation of a pattern (a.k.a. SSP expression).
+
+The _parse()_ method can create an empty SSP object from an empty input:
+
+```js
+const patt = SSP.parse('');
+console.log(patt.value());
+//=> ""
+console.log(patt.test(''));
+//=> true
+```
+
+_SSP.parse()_ method throws an _Error_ if a valid SSP cannot be created from its argument:
+
+```js
+SSP.parse(String.fromCharCode(0));
+// throws an Error
+```
+
+> _Note_: _SSP.parse()_ always returns a _Full Pattern_ SSP object.
 
 ### limitPatternLen() method
 
